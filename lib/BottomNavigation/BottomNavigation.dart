@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shopperstoreuser/BottomNavigation/AccountPage.dart';
 import 'package:shopperstoreuser/HomePage/HomeScreen.dart';
 
+import '../Cart/CartScreen.dart';
 import 'CartPage.dart';
 import 'FavPage.dart';
 

@@ -19,6 +19,9 @@ class ProductModel {
   final String title4;
   final String discount;
   final String newPrice;
+   String selectedqty;
+   String totalprice;
+  // final String quantity;
   // final String imageUrls;
 
 
@@ -41,6 +44,9 @@ class ProductModel {
     required this.title4,
     required this.discount,
     required this.newPrice,
+    required this.selectedqty,
+    required this.totalprice,
+    // required this.quantity,
     // required this.imageUrls
 
 
@@ -67,9 +73,13 @@ class ProductModel {
       title4: data['productTitle4']?? '',
       discount: data['discount']?? '',
       newPrice: data['productNewPrice']?? '',
+      selectedqty: data['quantity']?? '',
+      totalprice: data['totalprice']?? '',
+      // quantity: data['quantity']?? '',
       // imageUrls: data['images']?? '',
 
 
     );
   }
 }
+

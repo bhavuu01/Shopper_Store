@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'ShopperStore',
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
         ),
+        automaticallyImplyLeading: false,
         centerTitle: true,
         actions: <Widget>[
           IconButton(onPressed: (){}, icon: Icon(Icons.search)),

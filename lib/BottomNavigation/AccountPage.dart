@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:shopperstoreuser/User/AccountUser.dart';
 
 import 'BottomNavigation.dart';
 import 'FavPage.dart';
@@ -59,12 +60,12 @@ class _AccountPageState extends State<AccountPage> {
                       height: 70,
                       child: GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => const Accountuser(),
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AccountUser(),
+                            ),
+                          );
                         },
                         child: const Card(
                           child: Row(

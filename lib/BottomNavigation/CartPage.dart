@@ -1,15 +1,17 @@
-import 'package:flutter/material.dart';
+  import 'package:flutter/material.dart';
 
-class CartPage extends StatefulWidget {
-  const CartPage({super.key});
+  import '../Cart/CartScreen.dart';
 
-  @override
-  State<CartPage> createState() => _CartPageState();
-}
+  class CartPage extends StatefulWidget {
+    const CartPage({super.key});
 
-class _CartPageState extends State<CartPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
+    @override
+    State<CartPage> createState() => _CartPageState();
   }
-}
+
+  class _CartPageState extends State<CartPage> {
+    @override
+    Widget build(BuildContext context) {
+      return AddToCartScreen();
+    }
+  }
