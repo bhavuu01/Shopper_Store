@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1079751151436",
+    "project_id": "shopperstore-c9a3d",
+    "storage_bucket": "shopperstore-c9a3d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079751151436:android:3082d09ff58da8d6e489e9",
+        "android_client_info": {
+          "package_name": "com.example.shopperstore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3RqSQnlY3judZbMRJ625RBEf8BPHtTV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079751151436:android:f732e542995f880fe489e9",
+        "android_client_info": {
+          "package_name": "com.example.shopperstoreuser"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3RqSQnlY3judZbMRJ625RBEf8BPHtTV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

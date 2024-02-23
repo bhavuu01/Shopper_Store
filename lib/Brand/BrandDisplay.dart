@@ -1,0 +1,122 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
+import '../Models/ProductModel.dart';
+
+class ProductHome extends StatelessWidget {
+  final String selectedCategory;
+
+  const ProductHome({Key? key, required this.selectedCategory}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('Products')
+          .where('category', isEqualTo: selectedCategory) // Filter by selected category
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data == null) {
+          return const Center(child: Text('No data available'));
+        }
+
+        final productDocs = snapshot.data!.docs;
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 0.7,
+          ),
+          itemCount: productDocs.length,
+          itemBuilder: (context, index) {
+            final product = ProductModel.fromSnapshot(productDocs[index]);
+            return ProductCard(product: product);
+          },
+        );
+      },
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+
+  final ProductModel product;
+
+  const ProductCard({Key? key, required this.product,
+  }) : super(key: key);
+
+  @override Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        width: 150,
+        child: Card(
+          color: Colors.white,
+          elevation: 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                height: 150,
+                width: double.infinity,
+                child: PageView.builder(
+                  itemCount: product.images!.length,
+                  itemBuilder: (context, index) {
+                    return SizedBox(
+                      height: 150,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          product.images![index],
+                          // fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              Text(
+                product.productName,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 10,),
+
+
+
+              Column(
+                children: [
+                  Text(
+                    '₹ ${product.productPrice}',
+                    style: TextStyle(
+                        decoration: TextDecoration.lineThrough,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  Text(
+                    '₹ ${product.newPrice}',
+                    style: const TextStyle(
+                        color: Colors.green,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
