@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shopperstoreuser/Brand/BrandDisplay.dart';
 import 'package:shopperstoreuser/Models/CategoryModel.dart';
-
 import '../Models/BrandModel.dart';
 import '../Product/ProductScreen.dart';
 
@@ -89,7 +88,7 @@ class BrandCard extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-              builder: (context) => ProductScreen(seletedBrand: brand,products: [],)
+                  builder: (context) => ProductScreen(seletedBrand: brand,products: [],)
               ),
             );
           },
@@ -112,8 +111,8 @@ class BrandCard extends StatelessWidget {
 
                 SizedBox(height: 20,),
                 Text(
-                    brand.brand,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                  brand.brand,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),),
               ],
             ),
           ),

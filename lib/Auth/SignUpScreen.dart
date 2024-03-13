@@ -20,6 +20,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
+  TextEditingController stateController = TextEditingController();
+  TextEditingController zipcodeController = TextEditingController();
   bool isLoading = false;
   String uniquefilename = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -165,6 +169,101 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                   ),
+                  // Container(
+                  //   margin: const EdgeInsets.only(top: 30),
+                  //   child: TextFormField(
+                  //     controller: usernameController,
+                  //     validator: (value){
+                  //       if(value == null || value.isEmpty){
+                  //         return "Please enter your address";
+                  //       }
+                  //       return null;
+                  //     },
+                  //     decoration: InputDecoration(
+                  //       hintText: "Enter Your Address",
+                  //       label: const Text("Address"),
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(30),
+                  //       ),
+                  //       focusedBorder: const OutlineInputBorder(
+                  //           borderSide: BorderSide(color: Colors.black),
+                  //           borderRadius: BorderRadius.all(Radius.circular(30),)
+                  //       ),
+                  //       prefixIcon: const Icon(Icons.apartment),
+                  //     ),
+                  //   ),
+                  // ),
+                  // Container(
+                  //   margin: const EdgeInsets.only(top: 30),
+                  //   child: TextFormField(
+                  //     controller: addressController,
+                  //     validator: (value){
+                  //       if(value == null || value.isEmpty){
+                  //         return "Please enter your city";
+                  //       }
+                  //       return null;
+                  //     },
+                  //     decoration: InputDecoration(
+                  //       hintText: "Enter Your City",
+                  //       label: const Text("City"),
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(30),
+                  //       ),
+                  //       focusedBorder: const OutlineInputBorder(
+                  //           borderSide: BorderSide(color: Colors.black),
+                  //           borderRadius: BorderRadius.all(Radius.circular(30),)
+                  //       ),
+                  //       prefixIcon: const Icon(Icons.home_work),
+                  //     ),
+                  //   ),
+                  // ),
+                  // Container(
+                  //   margin: const EdgeInsets.only(top: 30),
+                  //   child: TextFormField(
+                  //     controller: cityController,
+                  //     validator: (value){
+                  //       if(value == null || value.isEmpty){
+                  //         return "Please enter your state";
+                  //       }
+                  //       return null;
+                  //     },
+                  //     decoration: InputDecoration(
+                  //       hintText: "Enter Your State",
+                  //       label: const Text("State"),
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(30),
+                  //       ),
+                  //       focusedBorder: const OutlineInputBorder(
+                  //           borderSide: BorderSide(color: Colors.black),
+                  //           borderRadius: BorderRadius.all(Radius.circular(30),)
+                  //       ),
+                  //       prefixIcon: const Icon(Icons.explore),
+                  //     ),
+                  //   ),
+                  // ), Container(
+                  //   margin: const EdgeInsets.only(top: 30),
+                  //   child: TextFormField(
+                  //     controller: stateController,
+                  //     validator: (value){
+                  //       if(value == null || value.isEmpty){
+                  //         return "Please enter your zipcode";
+                  //       }
+                  //       return null;
+                  //     },
+                  //     decoration: InputDecoration(
+                  //       hintText: "Enter Your ZipCode",
+                  //       label: const Text("ZipCode"),
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(30),
+                  //       ),
+                  //       focusedBorder: const OutlineInputBorder(
+                  //           borderSide: BorderSide(color: Colors.black),
+                  //           borderRadius: BorderRadius.all(Radius.circular(30),)
+                  //       ),
+                  //       prefixIcon: const Icon(Icons.account_box_rounded),
+                  //     ),
+                  //   ),
+                  // ),
                   Container(
                     alignment: Alignment.bottomRight,
                     padding: const EdgeInsets.all(20),
@@ -187,7 +286,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     "Mobile": mobileController.text,
                                     "UID": FirebaseAuth.instance.currentUser!.uid,
                                     "DocumentID": value.user!.uid,
-                                    "Address": '',
+                                    "Address": addressController.text,
+                                    "City": cityController.text,
+                                    "State": stateController.text,
+                                    "ZipCode": zipcodeController.text,
 
                                   });
                             });

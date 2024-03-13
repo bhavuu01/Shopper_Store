@@ -48,80 +48,70 @@ class ProductHome extends StatelessWidget {
 }
 
 class ProductCard extends StatelessWidget {
-
   final ProductModel product;
 
-  const ProductCard({Key? key, required this.product,
+  const ProductCard({
+    Key? key,
+    required this.product,
   }) : super(key: key);
 
-  @override Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        width: 150,
-        child: GestureDetector(
-          onTap: (){
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => ProductDetails(product: product))
-            );
-          },
-          child: Card(
-            color: Colors.white,
-            elevation: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  height: 150,
-                  width: double.infinity,
-                  child: PageView.builder(
-                    itemCount: product.images!.length,
-                    itemBuilder: (context, index) {
-                      return SizedBox(
-                        height: 150,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.network(
-                            product.images![index],
-                            // fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    },
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 150,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => ProductDetails(product: product)),
+          );
+        },
+        child: Card(
+          color: Colors.white,
+          elevation: 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 150,
+                // width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(
+                    product.images![0], // Displaying only the first image
+                    fit: BoxFit.cover,
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                Text(
-                  product.productName,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-
-                const SizedBox(height: 10,),
-
-
-
-                Column(
-                  children: [
-                    Text(
-                      '₹ ${product.productPrice}',
-                      style: TextStyle(
-                          decoration: TextDecoration.lineThrough,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold
-                      ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                product.productName,
+                style: const TextStyle(color: Colors.black,fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10,),
+              Column(
+                children: [
+                  Text(
+                    '₹ ${product.productPrice}',
+                    style: TextStyle(
+                      color: Colors.red,
+                        decoration: TextDecoration.lineThrough,
+                        decorationColor: Colors.red,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold
                     ),
-                    const SizedBox(height: 10,),
-                    Text(
-                      'M.R.P ₹ ${product.newPrice}',
-                      style: const TextStyle(
-                          color: Colors.green,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10,),
+                  Text(
+                    'M.R.P ₹ ${product.newPrice}',
+                    style: const TextStyle(
+                        color: Colors.green,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

@@ -62,7 +62,7 @@ class _AccountUserState extends State<AccountUser> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          'Username: ${_userData["Name"] ?? "Loading..."}',
+                          'Username: ${_userData["Name"]}',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -70,7 +70,7 @@ class _AccountUserState extends State<AccountUser> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          'Email: ${_userData["Email"] ?? "Loading..."}',
+                          'Email: ${_userData["Email"]}',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -78,7 +78,7 @@ class _AccountUserState extends State<AccountUser> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          'Mobile Number: ${_userData["Mobile"] ?? "Loading..."}',
+                          'Mobile Number: ${_userData["Mobile"]}',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

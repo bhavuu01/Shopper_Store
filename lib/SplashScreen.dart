@@ -1,8 +1,13 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopperstoreuser/Auth/LoginScreen.dart';
+import 'package:shopperstoreuser/BottomNavigation/BottomNavigation.dart';
 
+import 'HomePage/HomeScreen.dart';
+
+User? user = FirebaseAuth.instance.currentUser;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,9 +21,24 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3),(){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen(),));
-    });
+    Timer(const Duration(seconds: 5), checkingTheSavedData
+    );
+  }
+
+  void checkingTheSavedData() async {
+
+    // print("user.....${user}");
+    if (user == null) {
+      // print("object........$user");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    } else {
+      print("user found");
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => BottomNavigationHome()));
+    }
   }
 
   @override

@@ -1,27 +1,30 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:shopperstoreuser/HomePage/HomeScreen.dart';
+import 'package:provider/provider.dart';
 import 'package:shopperstoreuser/SplashScreen.dart';
+import 'Provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp();
-  runApp(const MyApp());
+  await Firebase.initializeApp(); // Make sure to await the initialization
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData.light(),
+      theme: Provider.of<ThemeProvider>(context).currentTheme, // Use the theme from the provider
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
     );
   }
 }
-
-

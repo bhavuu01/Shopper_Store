@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shopperstoreuser/Payment/CheckOut.dart';
 import '../Models/ProductModel.dart';
 
 class AddToCartScreen extends StatefulWidget {
@@ -69,10 +70,14 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
 
   void _updateQuantity(ProductModel product, int quantity) async {
     try {
+      double newTotalPrice = double.parse(product.newPrice.replaceAll(',', '')) * quantity;
       await FirebaseFirestore.instance
           .collection('ShoppingCart')
           .doc(product.id)
-          .update({'quantity': quantity.toString()});
+          .update({
+        'quantity': quantity.toString(),
+        'totalprice': newTotalPrice.toString(),
+      });
 
       // Refresh cart items after updating quantity
       _fetchUserCartProducts();
@@ -80,6 +85,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
       print('Error updating quantity: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +106,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
                   product.images![0],
                   width: 100,
                   height: 100,
-                  fit: BoxFit.cover,
+                  // fit: BoxFit.cover,
                 ),
                 title: Text(product.productName),
                 subtitle: Column(
@@ -167,9 +173,9 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
             Text('Subtotal: $_subtotal',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
             ElevatedButton(
               onPressed: () {
-                // Navigate to checkout screen or perform checkout logic
-              },
-              child: const Text('Checkout'),
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CheckOutScreen()));
+              }, style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
+              child: const Text('Checkout', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 16),),
             ),
           ],
         ),

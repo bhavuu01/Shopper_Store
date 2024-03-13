@@ -15,11 +15,12 @@ class FavPage extends StatefulWidget {
 
 class _FavPageState extends State<FavPage> {
   late List<FavModel> favoriteProducts = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Fetch favorite products from Firestore when the page is initialized
+
     fetchFavoriteProducts();
   }
 
@@ -45,9 +46,13 @@ class _FavPageState extends State<FavPage> {
 
       setState(() {
         favoriteProducts = products;
+        isLoading = false;
       });
     } catch (e) {
       print('Error fetching favorite products: $e');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -57,12 +62,20 @@ class _FavPageState extends State<FavPage> {
       appBar: AppBar(
         title: Text('Favorites'),
       ),
-      body: ListView.builder(
-        itemCount: favoriteProducts.length,
-        itemBuilder: (context, index) {
-          final product = favoriteProducts[index];
-          return Card(
-            child: Padding(
+      body: isLoading
+          ? Center(
+           child: CircularProgressIndicator(),
+      )
+          : favoriteProducts.isEmpty
+          ? Center(
+           child: Text('No favorite products found'),
+      )
+          : ListView.builder(
+            itemCount: favoriteProducts.length,
+            itemBuilder: (context, index) {
+             final product = favoriteProducts[index];
+             return Card(
+             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -73,7 +86,7 @@ class _FavPageState extends State<FavPage> {
                     borderRadius: BorderRadius.circular(8.0),
                     child: Image.network(
                       product.images![0],
-                      fit: BoxFit.cover,
+                      // fit: BoxFit.cover,
                     ),
                   ),
                 ),
@@ -110,13 +123,11 @@ class _FavPageState extends State<FavPage> {
         'productNewPrice': product.newPrice,
         'quantity': product.selectedqty,
         // 'totalprice': product.totalprice,
-        // Add any other necessary fields
+
       });
 
-      // Remove the product from favorites
       await FirebaseFirestore.instance.collection('Favorites').doc(product.id).delete();
 
-      // Refresh the favorite products list
       fetchFavoriteProducts();
     } catch (e) {
       print('Error adding to cart and removing from favorites: $e');

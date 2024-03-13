@@ -41,8 +41,8 @@ class _BottomNavigationHomeState extends State<BottomNavigationHome> {
       onWillPop: _onWillPop, // Register the callback for back button press
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: Colors.cyan.shade700,
-          unselectedItemColor: Colors.grey,
+          selectedItemColor: Colors.red[500], // Set selected item color to red
+          unselectedItemColor: Colors.white,
           currentIndex: widget.selectedIndex!.toInt(),
           onTap: (value) {
             setState(() {
@@ -51,27 +51,30 @@ class _BottomNavigationHomeState extends State<BottomNavigationHome> {
           },
           items: const [
             BottomNavigationBarItem(
-              backgroundColor: Colors.white70,
+              backgroundColor: Colors.lightBlue,
               label: "Home",
               icon: Icon(
                 Icons.home,
               ),
             ),
             BottomNavigationBarItem(
-              backgroundColor: Colors.white70,
+              // backgroundColor: Colors.white70,
+              backgroundColor: Colors.lightBlue,
               label: "Favorite",
               icon: Icon(
                 Icons.favorite,
               ),
             ),
             BottomNavigationBarItem(
-              backgroundColor: Colors.white70,
+              // backgroundColor: Colors.white70,
+              backgroundColor: Colors.lightBlue,
               label: "Cart",
               icon: Icon(Icons.shopping_cart),
             ),
             BottomNavigationBarItem(
               label: "User",
-              backgroundColor: Colors.white70,
+              // backgroundColor: Colors.white70,
+              backgroundColor: Colors.lightBlue,
               icon: Icon(
                 Icons.person_outline_outlined,
               ),

@@ -64,7 +64,7 @@ class _ProductDetailsState extends State<ProductDetails> {
         ))
         : Scaffold(
         appBar: AppBar(
-          title: Text("${widget.product.brand.toString()} products"),
+          title: Text("${widget.product.brand.toString()} Products"),
         ),
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -138,7 +138,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                         await _addToFavorites(widget.product);
                       }
                     },
-                    icon: Icon(Icons.favorite),
+                    icon: Icon(Icons.favorite,size: 30,),
                   ),
 
                   Padding(
@@ -173,7 +173,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 25,
-                              color: Colors.black,
+                              color: Colors.green,
                             ),
                           ),
                         ),
@@ -185,9 +185,10 @@ class _ProductDetailsState extends State<ProductDetails> {
                       child: Text(
                         "M.R.P.: ${widget.product.productPrice.toString()}",
                         style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 14,
                             decoration:
-                            TextDecoration.lineThrough),
+                            TextDecoration.lineThrough,color: Colors.red,
+                        decorationColor: Colors.red),
                       ),
                     ),
                     Padding(
@@ -197,7 +198,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                         "In stock.",
                         style: TextStyle(
                             fontSize: 20,
-                            color: Colors.green[900]),
+                            color: Colors.green),
                       ),
                     ),
                     Padding(

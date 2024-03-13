@@ -1,8 +1,11 @@
 // ignore_for_file: file_names
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopperstoreuser/User/AccountUser.dart';
+import 'package:shopperstoreuser/User/SettingScreen.dart';
 
+import '../Auth/LoginScreen.dart';
 import 'BottomNavigation.dart';
 import 'FavPage.dart';
 
@@ -139,19 +142,24 @@ class _AccountPageState extends State<AccountPage> {
                         onTap: () {
                           // Navigator.push(context, MaterialPageRoute(builder: (context) => const Settingpage()));
                         },
-                        child: const Card(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text("Setting", style: TextStyle(fontSize: 20)),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(Icons.settings),
-                              )
-                            ],
+                        child: GestureDetector(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => SettingScreen()));
+                          },
+                          child: const Card(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text("Setting", style: TextStyle(fontSize: 20)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(Icons.settings),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -170,19 +178,31 @@ class _AccountPageState extends State<AccountPage> {
                           //   );
                           // }
                         },
-                        child: const Card(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text("Logout", style: TextStyle(fontSize: 20)),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(Icons.logout),
-                              )
-                            ],
+                        child: GestureDetector(
+                          onTap: () {
+                            FirebaseAuth.instance.signOut();
+                            {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginScreen(),
+                                  ),
+                                      (route) => false);
+                            }
+                          },
+                          child: const Card(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text("Logout", style: TextStyle(fontSize: 20)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(Icons.logout),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),

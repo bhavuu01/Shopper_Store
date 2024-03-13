@@ -101,14 +101,6 @@ class ProductCard extends StatelessWidget {
           onTap: (){
             Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails(product: product)));
           },
-          // onTap: () {
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //         builder: (context) => ProductDetails(selectedProduct: product, products: [])
-          //     ),
-          //   );
-          // },
           child: Card(
             color: Colors.white,
             elevation: 1,
@@ -126,7 +118,7 @@ class ProductCard extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.network(
-                            product.images![index],
+                            product.images![0],
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -137,17 +129,17 @@ class ProductCard extends StatelessWidget {
                 SizedBox(height: 20),
                 Text(
                   product.productName,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.black),
                 ),
                 SizedBox(height: 10,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      product.newPrice,
+                      '₹ ${product.newPrice}',
                       style: TextStyle(color: Colors.green,fontSize: 15,fontWeight: FontWeight.bold),
                     ),
-                    Icon(Icons.star,color: Colors.yellow[900],)
+                    // Icon(Icons.star,color: Colors.yellow[900],)
                   ],
                 ),
           
