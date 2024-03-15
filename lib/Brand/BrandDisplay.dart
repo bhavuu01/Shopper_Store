@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shopperstoreuser/Product/ProductDetails.dart';
-
 import '../Models/ProductModel.dart';
 
 class ProductHome extends StatelessWidget {
@@ -21,8 +20,8 @@ class ProductHome extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (!snapshot.hasData || snapshot.data == null) {
-          return const Center(child: Text('No data available'));
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('No products available',));
         }
 
         final productDocs = snapshot.data!.docs;
@@ -85,29 +84,25 @@ class ProductCard extends StatelessWidget {
               const SizedBox(height: 20),
               Text(
                 product.productName,
-                style: const TextStyle(color: Colors.black,fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(height: 10),
               Column(
                 children: [
                   Text(
                     '₹ ${product.productPrice}',
                     style: TextStyle(
                       color: Colors.red,
-                        decoration: TextDecoration.lineThrough,
-                        decorationColor: Colors.red,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold
+                      decoration: TextDecoration.lineThrough,
+                      decorationColor: Colors.red,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 10,),
+                  const SizedBox(height: 10),
                   Text(
                     'M.R.P ₹ ${product.newPrice}',
-                    style: const TextStyle(
-                        color: Colors.green,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold
-                    ),
+                    style: const TextStyle(color: Colors.green, fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

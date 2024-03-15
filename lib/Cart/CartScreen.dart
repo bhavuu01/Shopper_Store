@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopperstoreuser/Payment/CheckOut.dart';
+import 'package:shopperstoreuser/Product/ProductDetails.dart';
 import '../Models/ProductModel.dart';
 
 class AddToCartScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class AddToCartScreen extends StatefulWidget {
 class _AddToCartScreenState extends State<AddToCartScreen> {
   List<ProductModel> _cartItems = [];
   double _subtotal = 0.0;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -48,9 +50,13 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
       setState(() {
         _cartItems = products;
         _subtotal = subtotal;
+        _isLoading = false; // Set loading state to false when data is fetched
       });
     } catch (e) {
       print('Error fetching products: $e');
+      setState(() {
+        _isLoading = false; // Set loading state to false even if there's an error
+      });
     }
   }
 
@@ -70,14 +76,22 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
 
   void _updateQuantity(ProductModel product, int quantity) async {
     try {
-      double newTotalPrice = double.parse(product.newPrice.replaceAll(',', '')) * quantity;
-      await FirebaseFirestore.instance
-          .collection('ShoppingCart')
-          .doc(product.id)
-          .update({
-        'quantity': quantity.toString(),
-        'totalprice': newTotalPrice.toString(),
-      });
+      if (quantity > 0) {
+        double newTotalPrice = double.parse(product.newPrice.replaceAll(',', '')) * quantity;
+        await FirebaseFirestore.instance
+            .collection('ShoppingCart')
+            .doc(product.id)
+            .update({
+          'quantity': quantity.toString(),
+          'totalprice': newTotalPrice.toString(),
+        });
+      } else {
+        // If quantity becomes 0, delete the product from the cart
+        await FirebaseFirestore.instance
+            .collection('ShoppingCart')
+            .doc(product.id)
+            .delete();
+      }
 
       // Refresh cart items after updating quantity
       _fetchUserCartProducts();
@@ -86,96 +100,115 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping Cart'),
       ),
-      body: ListView.builder(
-        itemCount: _cartItems.length,
-        itemBuilder: (context, index) {
-          ProductModel product = _cartItems[index];
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(0), // Added this line
-                leading: Image.network(
-                  product.images![0],
-                  width: 100,
-                  height: 100,
-                  // fit: BoxFit.cover,
-                ),
-                title: Text(product.productName),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'M.R.P: ${product.newPrice}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+      body: Stack(
+        children: [
+          ListView.builder(
+            itemCount: _cartItems.length,
+            itemBuilder: (context, index) {
+              ProductModel product = _cartItems[index];
+              return GestureDetector(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails(product: product)));
+                },
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(0), // Added this line
+                      leading: Image.network(
+                        product.images![0],
+                        width: 100,
+                        height: 100,
+                        // fit: BoxFit.cover,
+                      ),
+                      title: Text(product.productName),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'M.R.P: ${product.newPrice}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Total Price: ${product.totalprice}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.remove),
+                                    onPressed: () {
+                                      int newQuantity =
+                                          int.parse(product.selectedqty) - 1;
+                                      if (newQuantity >= 0) {
+                                        _updateQuantity(product, newQuantity);
+                                      }
+                                    },
+                                  ),
+                                  Text(product.selectedqty.toString()),
+                                  IconButton(
+                                    icon: const Icon(Icons.add),
+                                    onPressed: () {
+                                      int newQuantity =
+                                          int.parse(product.selectedqty) + 1;
+                                      _updateQuantity(product, newQuantity);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  _showDeleteConfirmationDialog(product);
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      'Total Price: ${product.totalprice}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove),
-                              onPressed: () {
-                                int newQuantity =
-                                    int.parse(product.selectedqty) - 1;
-                                if (newQuantity >= 0) {
-                                  _updateQuantity(product, newQuantity);
-                                }
-                              },
-                            ),
-                            Text(product.selectedqty.toString()),
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              onPressed: () {
-                                int newQuantity =
-                                    int.parse(product.selectedqty) + 1;
-                                _updateQuantity(product, newQuantity);
-                              },
-                            ),
-                          ],
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            _showDeleteConfirmationDialog(product);
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              );
+            },
+          ),
+          if (_isLoading)
+            Center(
+              child: CircularProgressIndicator(),
             ),
-          );
-        },
+        ],
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Subtotal: $_subtotal',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+            Text(
+              'Subtotal: $_subtotal',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => CheckOutScreen()));
-              }, style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
-              child: const Text('Checkout', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 16),),
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
+              child: const Text(
+                'Checkout',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+              ),
             ),
           ],
         ),

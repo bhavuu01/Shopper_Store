@@ -60,8 +60,8 @@ class _ProductScreenState extends State<ProductScreen> {
                 return Center(child: CircularProgressIndicator(),);
               }
 
-              if (!snapshot.hasData || snapshot.data == null){
-                return Center(child: Text('No data available'));
+              if (!snapshot.hasData || snapshot.data!.isEmpty){
+                return Center(child: Text('No products available'));
               }
 
               final productDocs = snapshot.data!;

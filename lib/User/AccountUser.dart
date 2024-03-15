@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AccountUser extends StatefulWidget {
   const AccountUser({Key? key}) : super(key: key);
@@ -12,14 +16,19 @@ class AccountUser extends StatefulWidget {
 class _AccountUserState extends State<AccountUser> {
   late User? _currentUser;
   late Map<String, dynamic> _userData = {};
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentUser();
+    _fetchUserData();
   }
 
-  Future<void> _getCurrentUser() async {
+  Future<void> _fetchUserData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     _currentUser = FirebaseAuth.instance.currentUser;
     if (_currentUser != null) {
       DocumentSnapshot<Map<String, dynamic>> userDataSnapshot =
@@ -29,6 +38,11 @@ class _AccountUserState extends State<AccountUser> {
           .get();
       setState(() {
         _userData = userDataSnapshot.data() ?? {};
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
       });
     }
   }
@@ -38,76 +52,104 @@ class _AccountUserState extends State<AccountUser> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Account Details'),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Center(
-            child: Column(
-              children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'User Information',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Username: ${_userData["Name"]}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Email: ${_userData["Email"]}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Mobile Number: ${_userData["Mobile"]}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => EditUserInfoScreen(
+                    onUserInfoUpdated: _updateUserInfo,
                   ),
                 ),
+              );
+            },
+            icon: const Icon(Icons.edit),
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? Center(
+           child: CircularProgressIndicator(),
+      )
+          : SingleChildScrollView(
+           child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+             child: Center(
+              child: Column(
+                children: [
+                  CircleAvatar(
+                   radius: 60,
+                    backgroundImage: _userData["ProfileImage"] != null
+                      ? NetworkImage(_userData["ProfileImage"])
+                      : AssetImage("assets/default_avatar.jpg") as ImageProvider,
+                  backgroundColor: Colors.grey[300],
+                ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => EditUserInfoScreen(
-                            onUserInfoUpdated: _updateUserInfo,
-                          ),
-                        ),
-                      );
-
-                  }, style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
-                  child: const Text('Edit', style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
+                TextFormField(
+                  readOnly: true,
+                  initialValue: _userData["Name"] ?? "",
+                  decoration: InputDecoration(
+                    labelText: "Username",
+                    labelStyle: TextStyle(
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  readOnly: true,
+                  initialValue: _userData["Email"] ?? "",
+                  decoration: InputDecoration(
+                    labelText: "Email",
+                    labelStyle: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  readOnly: true,
+                  initialValue: _userData["Mobile"] ?? "",
+                  decoration: InputDecoration(
+                    labelText: "Mobile Number",
+                    labelStyle: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  readOnly: true,
+                  initialValue: _userData["Password"] ?? "",
+                  decoration: InputDecoration(
+                    labelText: "Password",
+                    labelStyle: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -115,8 +157,9 @@ class _AccountUserState extends State<AccountUser> {
       ),
     );
   }
+
   void _updateUserInfo() {
-    _getCurrentUser();
+    _fetchUserData();
   }
 }
 
@@ -137,6 +180,8 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
   late TextEditingController _mobileController;
   late TextEditingController _passwordController;
   late User? _currentUser;
+  File? _selectedImage;
+  String? _profileImageUrl;
 
   @override
   void initState() {
@@ -150,31 +195,36 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
   }
 
   Future<void> _fetchUserData() async {
-    final userData = await FirebaseFirestore.instance
-        .collection("User")
-        .doc(_currentUser!.uid)
-        .get();
+    final userData = await FirebaseFirestore.instance.collection("User").doc(_currentUser!.uid).get();
 
     setState(() {
       _usernameController.text = userData["Name"];
       _emailController.text = userData["Email"];
       _mobileController.text = userData["Mobile"];
       _passwordController.text = userData["Password"];
+      _profileImageUrl = userData["ProfileImage"];
     });
   }
 
   Future<void> _updateUserData() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await FirebaseFirestore.instance
-            .collection("User")
-            .doc(_currentUser!.uid)
-            .update({
+        // Update user data in Firestore
+        await FirebaseFirestore.instance.collection("User").doc(_currentUser!.uid).update({
           "Name": _usernameController.text,
-          "Email": _emailController.text,
           "Mobile": _mobileController.text,
-          "Password": _passwordController.text,
         });
+
+        // Update profile image if selected
+        if (_selectedImage != null) {
+          String imageUrl = await _uploadImageToStorage(_selectedImage!);
+          setState(() {
+            _profileImageUrl = imageUrl;
+          });
+          await FirebaseFirestore.instance.collection("User").doc(_currentUser!.uid).update({
+            "ProfileImage": imageUrl,
+          });
+        }
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("User information updated successfully")),
@@ -185,6 +235,35 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
           const SnackBar(content: Text("Failed to update user information")),
         );
       }
+    }
+  }
+
+  Future<String> _uploadImageToStorage(File imageFile) async {
+    try {
+      // Upload image file to Firebase Storage
+      String fileName = _currentUser!.uid + "_profile_image.jpg";
+      Reference reference = FirebaseStorage.instance.ref().child("profile_images").child(fileName);
+      await reference.putFile(imageFile);
+      String imageUrl = await reference.getDownloadURL();
+      return imageUrl;
+    } catch (error) {
+      print("Error uploading image: $error");
+      rethrow; // Throw the error again to handle it in the calling function
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      setState(() {
+        _selectedImage = File(pickedImage.path);
+      });
+      // Upload the selected image and update the profile image URL
+      String imageUrl = await _uploadImageToStorage(_selectedImage!);
+      setState(() {
+        _profileImageUrl = imageUrl;
+      });
     }
   }
 
@@ -201,77 +280,98 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                child: TextFormField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20)
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.cyan),
-                      borderRadius: BorderRadius.all(Radius.circular(20),
-                      ),
-                    ),
+              Center(
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage: _profileImageUrl != null ? NetworkImage(_profileImageUrl!) : null,
+                    child: _profileImageUrl == null ? const Icon(Icons.add_a_photo) : null,
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
-                    }
-                    return null;
-                  },
                 ),
               ),
-              const SizedBox(height: 20,),
-              Container(
-                child: TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20)
-                      ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.cyan),
-                      borderRadius: BorderRadius.all(Radius.circular(20))
-                    )
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.cyan),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your username';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 20,),
-              Container(
-                child: TextFormField(
-                  controller: _mobileController,
-                  decoration: InputDecoration(
-                      labelText: 'Mobile Number',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20)
-                      ),
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.cyan),
-                          borderRadius: BorderRadius.all(Radius.circular(20))
-                      )
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _mobileController,
+                decoration: InputDecoration(
+                  labelText: 'Mobile Number',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.cyan),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your mobile number';
-                    }
-                    return null;
-                  },
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your mobile number';
+                  }
+                  return null;
+                },
               ),
-
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.cyan),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                ),
+                enabled: false, // Set enabled to false to make it unchangeable
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.cyan),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                ),
+                enabled: false, // Set enabled to false to make it unchangeable
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _updateUserData,
-                child: const Text('Update',style: TextStyle(color: Colors.black),),
+                child: const Text(
+                  'Save',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
             ],
           ),
@@ -279,13 +379,4 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
       ),
     );
   }
-
-  // @override
-  // void dispose() {
-  //   _usernameController.dispose();
-  //   _emailController.dispose();
-  //   _mobileController.dispose();
-  //   _passwordController.dispose();
-  //   super.dispose();
-  // }
 }

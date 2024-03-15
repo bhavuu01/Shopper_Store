@@ -48,7 +48,7 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                     const Text(
                       'Account Details',
-                      style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const Icon(Icons.person)
                   ],
