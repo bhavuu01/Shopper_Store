@@ -1,76 +1,141 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../Models/ProductModel.dart';
+
 class CheckOutScreen extends StatefulWidget {
-  const CheckOutScreen({super.key});
+  final List<ProductModel> cartItems;
+
+  const CheckOutScreen({Key? key, required this.cartItems}) : super(key: key);
 
   @override
   State<CheckOutScreen> createState() => _CheckOutScreenState();
 }
 
-class _CheckOutScreenState extends State<CheckOutScreen>{
+class _CheckOutScreenState extends State<CheckOutScreen> {
   @override
   Widget build(BuildContext context) {
+    double totalPrice = 0;
+    double totalDiscount = 0;
+    double deliveryCharges = 0;
+
+
+    widget.cartItems.forEach((product) {
+      double productPrice = double.parse(product.productPrice.replaceAll(',', ''));
+      double newPrice = double.parse(product.newPrice.replaceAll(',', ''));
+      totalPrice += productPrice;
+      totalDiscount += (productPrice - newPrice);
+    });
+
+    double subtotal = totalPrice - totalDiscount + deliveryCharges;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Checkout'),
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('Users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (!snapshot.hasData || snapshot.data!.data() == null) {
-            return Center(child: Text('No user data found'));
-          }
-
-          final userData = snapshot.data!.data() as Map<String, dynamic>;
-
-          if (userData.isEmpty) {
-            return Center(child: Text('User data is empty'));
-          }
-
-          return Card(
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text('Username'),
-                  subtitle: Text(userData['Username'] ?? ''),
-                ),
-                ListTile(
-                  title: Text('Email'),
-                  subtitle: Text(userData['Email'] ?? ''),
-                ),
-                ListTile(
-                  title: Text('Mobile'),
-                  subtitle: Text(userData['Mobile'] ?? ''),
-                ),
-                ListTile(
-                  title: Text('Address'),
-                  subtitle: Text(userData['Address'] ?? ''),
-                ),
-                ListTile(
-                  title: Text('City'),
-                  subtitle: Text(userData['City'] ?? ''),
-                ),
-                ListTile(
-                  title: Text('State'),
-                  subtitle: Text(userData['State'] ?? ''),
-                ),
-                ListTile(
-                  title: Text('Zipcode'),
-                  subtitle: Text(userData['Zipcode'] ?? ''),
-                ),
-              ],
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.cartItems.length,
+              itemBuilder: (context, index) {
+                ProductModel product = widget.cartItems[index];
+                return Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: ListTile(
+                      leading: Image.network(
+                        product.images![0],
+                        width: 100,
+                        height: 100,
+                      ),
+                      title: Text(
+                        product.productName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '₹${product.productPrice}',
+                            style: TextStyle(
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
+                          Text('MRP ${product.totalprice}'),
+                          Text('Qty: ${product.selectedqty}'),
+                          Text('Total Price ${product.totalprice}'),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+          Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Card(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Price Details',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Product Price:'),
+                        Text('₹$totalPrice'),
+                      ],
+                    ),
+                    SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Total Discount:'),
+                        Text('₹$totalDiscount'),
+                      ],
+                    ),
+                    SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Delivery Charges:'),
+                        Text('₹$deliveryCharges'),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Divider(color: Colors.grey),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Subtotal:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '₹$subtotal',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

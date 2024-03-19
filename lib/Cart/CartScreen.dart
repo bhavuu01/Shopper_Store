@@ -202,7 +202,12 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CheckOutScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CheckOutScreen(cartItems: _cartItems),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
               child: const Text(
@@ -210,6 +215,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
+
           ],
         ),
       ),

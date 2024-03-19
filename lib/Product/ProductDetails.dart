@@ -542,6 +542,17 @@ class _ProductDetailsState extends State<ProductDetails> {
         'discount': product.discount,
         'quantity': selectedqty,
         'totalprice': product.totalprice,
+        'productTitle1': product.title1,
+        'productTitle2': product.title2,
+        'productTitle3': product.title3,
+        'productTitle4': product.title4,
+        'productTitleDetail1': product.product1,
+        'productTitleDetail2': product.product2,
+        'productTitleDetail3': product.product3,
+        'productTitleDetail4': product.product4,
+        'productDescription': product.productDescription,
+        'productColor': product.color,
+        'brand': product.brand,
       });
       print('Product added to cart successfully!');
     } catch (e) {

@@ -37,9 +37,23 @@ class _FavPageState extends State<FavPage> {
           id: doc.id,
           productName: doc['productName'],
           newPrice: doc['productNewPrice'],
-          // productPrice: doc['productPrice'],
           selectedqty: doc['quantity'],
+          // product1: doc['productTitleDetail1'],
+          // product2: doc['productTitleDetail2'],
+          // product3: doc['productTitleDetail3'],
+          // product4: doc['productTitleDetail4'],
+          // title1: doc['productTitle1'],
+          // title2: doc['productTitle2'],
+          // title3: doc['productTitle3'],
+          // title4: doc['productTitle4'],
+          // brand: doc['brand'],
+          // category: doc['category'],
+          // color: doc['productColor'],
+          // discount: doc['discount'],
+          // productDescription: doc['productDescription'],
+          // productPrice: doc['productPrice'],
           // totalprice: doc['totalprice'],
+          // itemdetails: doc['itemdetails'],
           images: List<String>.from(doc['images'] ?? []),
         );
       }).toList();
@@ -68,46 +82,61 @@ class _FavPageState extends State<FavPage> {
       )
           : favoriteProducts.isEmpty
           ? Center(
-           child: Text('No favorite products found'),
+              child: Text('No favorite products found'),
       )
           : ListView.builder(
-            itemCount: favoriteProducts.length,
-            itemBuilder: (context, index) {
-             final product = favoriteProducts[index];
-             return Card(
-             child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: SizedBox(
-                  width: 150,
-                  height: 100,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.network(
-                      product.images![0],
-                      // fit: BoxFit.cover,
+          itemCount: favoriteProducts.length,
+          itemBuilder: (context, index) {
+            final product = favoriteProducts[index];
+            return GestureDetector(
+              onTap: (){
+                // Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails(product: product)));
+              },
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                   child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: SizedBox(
+                     width: 150,
+                      height: 100,
+                      child: ClipRRect(
+                       borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                        product.images![0],
+                      ),
                     ),
                   ),
-                ),
-                title: Text(product.productName),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Price: ${product.newPrice}'),
-                    Text('Quantity: ${product.selectedqty}')
-                  ],
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.shopping_cart),
-                  onPressed: () {
-                    // Add the product to the cart and remove from favorites
-                    _addToCartAndRemoveFromFavorites(product);
-                  },
+                    title: Text(product.productName),
+                     subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Price: ${product.newPrice}'),
+                        Text('Quantity: ${product.selectedqty}')
+                    ],
+                  ),
+                   trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.favorite),
+                        color: Colors.red,
+                        onPressed: () {
+                          _removeFromFavorites(product);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.shopping_cart),
+                        onPressed: () {
+                          _addToCartAndRemoveFromFavorites(product);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
+              ),
+            );
         },
       ),
     );
@@ -115,22 +144,34 @@ class _FavPageState extends State<FavPage> {
 
   Future<void> _addToCartAndRemoveFromFavorites(FavModel product) async {
     try {
-      // Add the product to the cart
       await FirebaseFirestore.instance.collection('ShoppingCart').add({
         'UID': FirebaseAuth.instance.currentUser!.uid,
         'images': product.images,
         'productName': product.productName,
         'productNewPrice': product.newPrice,
         'quantity': product.selectedqty,
-        // 'totalprice': product.totalprice,
-
       });
 
-      await FirebaseFirestore.instance.collection('Favorites').doc(product.id).delete();
+      await FirebaseFirestore.instance
+          .collection('Favorites')
+          .doc(product.id)
+          .delete();
 
       fetchFavoriteProducts();
     } catch (e) {
       print('Error adding to cart and removing from favorites: $e');
+    }
+  }
+
+  Future<void> _removeFromFavorites(FavModel product) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Favorites')
+          .doc(product.id)
+          .delete();
+      fetchFavoriteProducts();
+    } catch (e) {
+      print('Error removing from favorites: $e');
     }
   }
 }
