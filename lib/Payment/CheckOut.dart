@@ -1,4 +1,7 @@
+
+
 import 'package:flutter/material.dart';
+import 'package:shopperstoreuser/Payment/Address.dart';
 
 import '../Models/ProductModel.dart';
 
@@ -12,25 +15,35 @@ class CheckOutScreen extends StatefulWidget {
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
+  double totalPrice = 0;
+  double totalDiscount = 0;
+  double deliveryCharges = 0;
+  double subtotal = 0;
+
   @override
-  Widget build(BuildContext context) {
-    double totalPrice = 0;
-    double totalDiscount = 0;
-    double deliveryCharges = 0;
+  void initState() {
+    super.initState();
+    _calculatePriceDetails();
+  }
 
-
-    widget.cartItems.forEach((product) {
+  void _calculatePriceDetails() {
+    totalPrice = 0;
+    totalDiscount = 0;
+    for (var product in widget.cartItems) {
       double productPrice = double.parse(product.productPrice.replaceAll(',', ''));
       double newPrice = double.parse(product.newPrice.replaceAll(',', ''));
-      totalPrice += productPrice;
-      totalDiscount += (productPrice - newPrice);
-    });
+      totalPrice += productPrice * int.parse(product.selectedqty);
+      totalDiscount += (productPrice - newPrice) * int.parse(product.selectedqty);
+    }
 
-    double subtotal = totalPrice - totalDiscount + deliveryCharges;
+    subtotal = totalPrice - totalDiscount + deliveryCharges;
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Checkout'),
+        title: const Text('Checkout'),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,16 +55,17 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 ProductModel product = widget.cartItems[index];
                 return Card(
                   child: Padding(
-                    padding: EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(20.0),
                     child: ListTile(
                       leading: Image.network(
                         product.images![0],
                         width: 100,
-                        height: 100,
+                        height: 150,
+                        // fit: BoxFit.cover,
                       ),
                       title: Text(
                         product.productName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -60,11 +74,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         children: [
                           Text(
                             '₹${product.productPrice}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               decoration: TextDecoration.lineThrough,
                             ),
                           ),
-                          Text('MRP ${product.totalprice}'),
+                          Text('MRP ${product.newPrice}'),
                           Text('Qty: ${product.selectedqty}'),
                           Text('Total Price ${product.totalprice}'),
                         ],
@@ -76,61 +90,91 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(10.0),
             child: Card(
+              elevation: 3,
               child: Padding(
-                padding: EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    const Text(
                       'Price Details',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Product Price:'),
+                        const Text('Product Price:'),
                         Text('₹$totalPrice'),
                       ],
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Total Discount:'),
+                        const Text('Total Discount:'),
                         Text('₹$totalDiscount'),
                       ],
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Delivery Charges:'),
+                        const Text('Delivery Charges:'),
                         Text('₹$deliveryCharges'),
                       ],
                     ),
-                    SizedBox(height: 8),
-                    Divider(color: Colors.grey),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
+                    const Divider(color: Colors.grey),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           'Subtotal:',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '₹$subtotal',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                   ],
+                ),
+              ),
+            ),
+          ),
+          // const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.all(14.0), // Adjust padding as needed
+            child: Text(
+              'Subtotal: ₹$subtotal',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.black, // Change color according to your preference
+              ),
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Address()));
+                },
+                child: Text(
+                  'Place Order',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
                 ),
               ),
             ),

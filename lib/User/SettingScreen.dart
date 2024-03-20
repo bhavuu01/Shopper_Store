@@ -35,9 +35,39 @@ class SettingScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 20),
+            Text(
+              "Account Settings",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Divider(),
+            buildSettingsItem("Edit Profile", Icons.edit),
+            buildSettingsItem("Manage Notifications", Icons.notifications),
+            buildSettingsItem("Saved Addresses", Icons.location_on),
+            SizedBox(height: 20),
+            Text(
+              "Feedback & Information",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Divider(),
+            buildSettingsItem("Terms of Use", Icons.description),
+            buildSettingsItem("Privacy Policy", Icons.privacy_tip),
+            buildSettingsItem("Return Policy", Icons.keyboard_return),
+            buildSettingsItem("Help Center", Icons.help),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildSettingsItem(String title, IconData icon) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      trailing: Icon(Icons.arrow_forward_ios),
+      onTap: () {
+        // Handle onTap action
+      },
     );
   }
 }

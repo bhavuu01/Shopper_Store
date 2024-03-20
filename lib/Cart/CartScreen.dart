@@ -6,6 +6,8 @@ import 'package:shopperstoreuser/Product/ProductDetails.dart';
 import '../Models/ProductModel.dart';
 
 class AddToCartScreen extends StatefulWidget {
+  const AddToCartScreen({super.key});
+
   @override
   _AddToCartScreenState createState() => _AddToCartScreenState();
 }
@@ -31,7 +33,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
 
       List<ProductModel> products = [];
       double subtotal = 0.0;
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         ProductModel product = ProductModel.fromSnapshot(doc);
         try {
           // Remove commas from the price string
@@ -45,7 +47,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
           print('Error calculating total price: $e');
         }
         products.add(product);
-      });
+      }
 
       setState(() {
         _cartItems = products;
@@ -186,7 +188,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
             },
           ),
           if (_isLoading)
-            Center(
+            const Center(
               child: CircularProgressIndicator(),
             ),
         ],
@@ -198,7 +200,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
           children: [
             Text(
               'Subtotal: $_subtotal',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             ElevatedButton(
               onPressed: () {
