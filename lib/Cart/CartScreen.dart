@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:shopperstoreuser/Payment/CheckOut.dart';
 import 'package:shopperstoreuser/Product/ProductDetails.dart';
 import '../Models/ProductModel.dart';
@@ -17,6 +18,13 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   List<ProductModel> _cartItems = [];
   double _subtotal = 0.0;
   bool _isLoading = true;
+
+  final NumberFormat _indianCurrencyFormat =
+  NumberFormat.currency(locale: 'en_IN', symbol: '₹');
+
+  String _formatCurrency(double amount) {
+    return _indianCurrencyFormat.format(amount);
+  }
 
   @override
   void initState() {
@@ -40,7 +48,8 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
           // Remove commas from the price string
           String priceWithoutCommas = product.newPrice.replaceAll(',', '');
           // Parse the price as a double
-          double totalPrice = double.parse(priceWithoutCommas) * int.parse(product.selectedqty);
+          double totalPrice =
+              double.parse(priceWithoutCommas) * int.parse(product.selectedqty);
           // Assign the calculated total price to the product
           product.totalprice = totalPrice.toString();
           subtotal += totalPrice;
@@ -79,7 +88,8 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
   void _updateQuantity(ProductModel product, int quantity) async {
     try {
       if (quantity > 0) {
-        double newTotalPrice = double.parse(product.newPrice.replaceAll(',', '')) * quantity;
+        double newTotalPrice =
+            double.parse(product.newPrice.replaceAll(',', '')) * quantity;
         await FirebaseFirestore.instance
             .collection('ShoppingCart')
             .doc(product.id)
@@ -119,13 +129,15 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ProductDetails(product: product)));
+                          builder: (context) =>
+                              ProductDetails(product: product)));
                 },
                 child: Card(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
-                      contentPadding: const EdgeInsets.all(0), // Added this line
+                      contentPadding:
+                      const EdgeInsets.all(0), // Added this line
                       leading: Image.network(
                         product.images![0],
                         width: 100,
@@ -143,7 +155,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
                             ),
                           ),
                           Text(
-                            'Total Price: ${product.totalprice}',
+                            'Total Price: ${_formatCurrency(double.parse(product.totalprice))}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -202,8 +214,9 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Subtotal: $_subtotal',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              'Subtotal: ${_formatCurrency(_subtotal)}',
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 18),
             ),
             ElevatedButton(
               onPressed: () {
@@ -211,7 +224,8 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CheckOutScreen(cartItems: _cartItems),
+                      builder: (context) =>
+                          CheckOutScreen(cartItems: _cartItems),
                     ),
                   );
                 } else {
@@ -228,7 +242,10 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
               style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
               child: const Text(
                 'Checkout',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
               ),
             ),
           ],
@@ -236,13 +253,12 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
       ),
     );
   }
-
   void _showDeleteConfirmationDialog(ProductModel product) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Delete Product'),
+          title: const Text('Delete Product'),
         content: const Text('Are you sure you want to delete this product?'),
         actions: <Widget>[
           TextButton(
@@ -257,7 +273,7 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
             child: const Text('Delete'),
           ),
         ],
-          );
+      );
         },
     );
   }

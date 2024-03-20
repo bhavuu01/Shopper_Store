@@ -11,11 +11,34 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   String _paymentMethod = 'Cash on Delivery';
+  double _subtotal = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _calculateSubtotal();
+  }
+
+  void _calculateSubtotal() async {
+    String currentUserUID = FirebaseAuth.instance.currentUser!.uid;
+    QuerySnapshot cartSnapshot = await FirebaseFirestore.instance
+        .collection('ShoppingCart')
+        .where('UID', isEqualTo: currentUserUID)
+        .get();
+
+    double subtotal = 0.0;
+    cartSnapshot.docs.forEach((doc) {
+      double totalprice = double.parse(doc['totalprice']);
+      subtotal += totalprice;
+    });
+
+    setState(() {
+      _subtotal = subtotal;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    String currentUserUID = FirebaseAuth.instance.currentUser!.uid;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Payment'),
@@ -55,10 +78,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
             ),
             SizedBox(height: 16),
+            Text(
+              'Subtotal: $_subtotal',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {
                 try {
                   // Fetch the user's shopping cart items
+                  String currentUserUID = FirebaseAuth.instance.currentUser!.uid;
                   QuerySnapshot cartSnapshot = await FirebaseFirestore.instance
                       .collection('ShoppingCart')
                       .where('UID', isEqualTo: currentUserUID)
@@ -79,9 +108,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   // Add the order to the Orders collection
                   await FirebaseFirestore.instance.collection('Orders').add({
                     'paymentMethod': _paymentMethod,
-                    'products': products, // Add the list of products to the order
-                    'timestamp': Timestamp.now(), // Add a timestamp for ordering
-                    'UID': currentUserUID, // Add the user's ID for reference
+                    'products': products,
+                    'subtotal': _subtotal,
+                    'timestamp': Timestamp.now(),
+                    'UID': currentUserUID,
+
                   });
 
                   // Handle success

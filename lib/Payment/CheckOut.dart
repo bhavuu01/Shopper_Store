@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shopperstoreuser/Payment/Address.dart';
 
 import '../Models/ProductModel.dart';
@@ -15,6 +16,12 @@ class CheckOutScreen extends StatefulWidget {
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
+  String _formatCurrency(double amount) {
+    final NumberFormat _indianCurrencyFormat =
+    NumberFormat.currency(locale: 'en_IN', symbol: '₹');
+    return _indianCurrencyFormat.format(amount);
+  }
+
   double totalPrice = 0;
   double totalDiscount = 0;
   double deliveryCharges = 0;
@@ -38,6 +45,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
     subtotal = totalPrice - totalDiscount + deliveryCharges;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +88,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           ),
                           Text('MRP ${product.newPrice}'),
                           Text('Qty: ${product.selectedqty}'),
-                          Text('Total Price ${product.totalprice}'),
+                          Text('Total Price ${_formatCurrency(double.parse(product.totalprice))}'), // Format total price with commas
                         ],
                       ),
                     ),
@@ -110,7 +118,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Product Price:'),
-                        Text('₹$totalPrice'),
+                        Text('₹${_formatCurrency(totalPrice)}'), // Format product price with commas
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -118,7 +126,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Total Discount:'),
-                        Text('₹$totalDiscount'),
+                        Text('₹${_formatCurrency(totalDiscount)}'), // Format total discount with commas
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -126,7 +134,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Delivery Charges:'),
-                        Text('₹$deliveryCharges'),
+                        Text('₹${_formatCurrency(deliveryCharges)}'), // Format delivery charges with commas
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -140,7 +148,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '₹$subtotal',
+                          '₹${_formatCurrency(subtotal)}', // Format subtotal with commas
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -150,11 +158,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               ),
             ),
           ),
-          // const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.all(14.0), // Adjust padding as needed
             child: Text(
-              'Subtotal: ₹$subtotal',
+              'Subtotal: ₹${_formatCurrency(subtotal)}', // Format subtotal with commas
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
