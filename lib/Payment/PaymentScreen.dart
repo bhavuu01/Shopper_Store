@@ -25,63 +25,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Selected Items',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('ShoppingCart')
-                    .where('UID', isEqualTo: currentUserUID)
-                    .snapshots(),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        var doc = snapshot.data!.docs[index];
-                        return Card(
-                          child: ListTile(
-                            leading: Image.network(doc['images'][0]),
-                            title: Text(
-                              doc['productName'],
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'MRP: ${doc['productPrice']}',
-                                  style: TextStyle(
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
-                                ),
-                                Text(
-                                  'Product Price: ${doc['productNewPrice']}',
-
-                                ),
-                                Text(
-                                  'Quantity: ${doc['quantity']}',
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }
-                  return Text('No Orders Found');
-                },
-              ),
-            ),
             SizedBox(height: 16),
             Text(
               'Payment Method',
@@ -113,16 +56,39 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
+                try {
+                  // Fetch the user's shopping cart items
+                  QuerySnapshot cartSnapshot = await FirebaseFirestore.instance
+                      .collection('ShoppingCart')
+                      .where('UID', isEqualTo: currentUserUID)
+                      .get();
 
-                FirebaseFirestore.instance.collection('Orders').add({
-                  'paymentMethod': _paymentMethod,
+                  // Extract product details from the shopping cart
+                  List<Map<String, dynamic>> products = [];
+                  cartSnapshot.docs.forEach((doc) {
+                    Map<String, dynamic> productData = {
+                      'productName': doc['productName'],
+                      'productPrice': doc['productPrice'],
+                      'quantity': doc['quantity'],
+                      'totalPrice': doc['totalprice'],
+                    };
+                    products.add(productData);
+                  });
 
-                }).then((value) {
+                  // Add the order to the Orders collection
+                  await FirebaseFirestore.instance.collection('Orders').add({
+                    'paymentMethod': _paymentMethod,
+                    'products': products, // Add the list of products to the order
+                    'timestamp': Timestamp.now(), // Add a timestamp for ordering
+                    'UID': currentUserUID, // Add the user's ID for reference
+                  });
+
                   // Handle success
-                }).catchError((error) {
+                } catch (error) {
                   // Handle error
-                });
+                  print('Error placing order: $error');
+                }
               },
               child: Text('Place Order'),
             ),
