@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shopperstoreuser/Payment/CheckOut.dart';
 import 'package:shopperstoreuser/Product/ProductDetails.dart';
 import '../Models/ProductModel.dart';
@@ -69,7 +70,6 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
           .doc(product.id)
           .delete();
 
-      // Refresh cart items after deletion
       _fetchUserCartProducts();
     } catch (e) {
       print('Error deleting product: $e');
@@ -115,8 +115,11 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
             itemBuilder: (context, index) {
               ProductModel product = _cartItems[index];
               return GestureDetector(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails(product: product)));
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ProductDetails(product: product)));
                 },
                 child: Card(
                   child: Padding(
@@ -204,12 +207,23 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CheckOutScreen(cartItems: _cartItems),
-                  ),
-                );
+                if (_subtotal > 0) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CheckOutScreen(cartItems: _cartItems),
+                    ),
+                  );
+                } else {
+                  Fluttertoast.showToast(
+                    msg: "Add items to the cart",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
               child: const Text(
@@ -217,7 +231,6 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
-
           ],
         ),
       ),
@@ -226,26 +239,26 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
 
   void _showDeleteConfirmationDialog(ProductModel product) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Product'),
-          content: const Text('Are you sure you want to delete this product?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                _deleteProduct(product);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
+        context: context,
+        builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Delete Product'),
+        content: const Text('Are you sure you want to delete this product?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              _deleteProduct(product);
+              Navigator.of(context).pop();
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+          );
+        },
     );
   }
 }

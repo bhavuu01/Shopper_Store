@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shopperstoreuser/Payment/PaymentScreen.dart';
 import 'AddressModel.dart';
 
 class Address extends StatefulWidget {
@@ -160,6 +161,12 @@ class _AddressState extends State<Address> {
           }
           Navigator.of(context).pop();
         }
+
+        // Navigate to the next screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PaymentScreen()),
+        );
       }
     } catch (e) {
       debugPrint("Error saving product: $e");
@@ -173,10 +180,13 @@ class _AddressState extends State<Address> {
     landmarkController.clear();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: false,),
+      appBar: AppBar(
+        title: Text("Address",style: TextStyle(fontWeight: FontWeight.bold),),
+        automaticallyImplyLeading: false,),
       body: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Form(
