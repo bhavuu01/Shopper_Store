@@ -19,6 +19,10 @@ class Address extends StatefulWidget {
 }
 
 class _AddressState extends State<Address> {
+
+  int? _selectedAddressIndex;
+
+
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController fullNameController = TextEditingController();
@@ -32,10 +36,12 @@ class _AddressState extends State<Address> {
   String? stateValue;
   String? cityValue;
   bool isSending = false;
+  bool isExpanded = false;
 
   @override
   void initState() {
     if (widget.addressItem != null) {
+      _selectedAddressIndex = 0;
       List<String> address = widget.addressItem!.address.split(',');
       String buildingName = '${address[0]}, ${address[1]}';
       String area = address[2];
@@ -165,7 +171,7 @@ class _AddressState extends State<Address> {
         // Navigate to the next screen
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PaymentScreen()),
+          MaterialPageRoute(builder: (context) => const PaymentScreen()),
         );
       }
     } catch (e) {
@@ -180,285 +186,388 @@ class _AddressState extends State<Address> {
     landmarkController.clear();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Address",style: TextStyle(fontWeight: FontWeight.bold),),
-        automaticallyImplyLeading: false,),
-      body: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              InputTextField(
-                controller: fullNameController,
-                lableText: 'Full Name',
-                hintText: 'John Jackson',
-                keyBordType: TextInputType.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your full name';
-                  }
-                  return null;
-                },
-              ),
-              InputTextField(
-                controller: phnController,
-                lableText: 'Phone Number',
-                hintText: '9876543210',
-                keyBordType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a phone number';
-                  }
-
-                  // Remove all non-numeric characters from the input
-                  final numericValue = value.replaceAll(RegExp(r'[^0-9]'), '');
-
-                  // Check if the phone number is exactly 10 digits long
-                  if (numericValue.length != 10) {
-                    return 'Phone number should be 10 digits long';
-                  }
-
-                  // Check if the phone number starts with a valid prefix (e.g., 7, 8, or 9 for Indian mobile numbers)
-                  if (!RegExp(r'^[789]').hasMatch(numericValue)) {
-                    return 'Invalid phone number prefix';
-                  }
-
-                  return null;
-                },
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: InputTextField(
-                      controller: pinCodeController,
-                      lableText: 'PinCode',
-                      hintText: '380011',
-                      keyBordType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter the pincode';
-                        }
-
-                        // Check if the pincode is exactly 6 digits long
-                        if (value.length != 6) {
-                          return 'Pincode should be 6 digits long';
-                        }
-
-                        // Check if the pincode contains only digits
-                        if (!RegExp(r'^[0-9]*$').hasMatch(value)) {
-                          return 'Pincode should contain only digits';
-                        }
-
-                        return null;
-                      },
+    return WillPopScope(
+      onWillPop: () async {
+        // If the "Add New Address" field is expanded, collapse it and return false to prevent popping the screen
+        if (isExpanded) {
+          setState(() {
+            isExpanded = false;
+          });
+          return false;
+        }
+        // Otherwise, allow popping the screen
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            "Address",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          automaticallyImplyLeading: false,
+        ),
+        body: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                if (!isExpanded) // Show only if not expanded
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        isExpanded = true;
+                      });
+                    },
+                    child: const Center(
+                      child: Text(
+                        '+ Add New Address',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
                     ),
                   ),
-                  Expanded(
-                    child: InkWell(
-                      onTap: isSending
-                          ? null
-                          : () async {
-                              await fetchLocationAndPopulateAddress();
-                            },
-                      child: Container(
-                        margin: const EdgeInsets.all(14),
-                        height: MediaQuery.of(context).size.height * 0.045,
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                          borderRadius: BorderRadius.circular(10),
+                if (isExpanded) ...[
+                  InputTextField(
+                    controller: fullNameController,
+                    lableText: 'Full Name',
+                    hintText: 'John Jackson',
+                    keyBordType: TextInputType.name,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your full name';
+                      }
+                      return null;
+                    },
+                  ),
+                  InputTextField(
+                    controller: phnController,
+                    lableText: 'Phone Number',
+                    hintText: '9876543210',
+                    keyBordType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a phone number';
+                      }
+
+                      // Remove all non-numeric characters from the input
+                      final numericValue =
+                          value.replaceAll(RegExp(r'[^0-9]'), '');
+
+                      // Check if the phone number is exactly 10 digits long
+                      if (numericValue.length != 10) {
+                        return 'Phone number should be 10 digits long';
+                      }
+
+                      // Check if the phone number starts with a valid prefix (e.g., 7, 8, or 9 for Indian mobile numbers)
+                      if (!RegExp(r'^[789]').hasMatch(numericValue)) {
+                        return 'Invalid phone number prefix';
+                      }
+
+                      return null;
+                    },
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: InputTextField(
+                          controller: pinCodeController,
+                          lableText: 'PinCode',
+                          hintText: '380011',
+                          keyBordType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the pincode';
+                            }
+
+                            // Check if the pincode is exactly 6 digits long
+                            if (value.length != 6) {
+                              return 'Pincode should be 6 digits long';
+                            }
+
+                            // Check if the pincode contains only digits
+                            if (!RegExp(r'^[0-9]*$').hasMatch(value)) {
+                              return 'Pincode should contain only digits';
+                            }
+
+                            return null;
+                          },
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Icon(
-                                Icons.gps_fixed,
+                      ),
+                      Expanded(
+                        child: InkWell(
+                          onTap: isSending
+                              ? null
+                              : () async {
+                                  await fetchLocationAndPopulateAddress();
+                                },
+                          child: Container(
+                            margin: const EdgeInsets.all(14),
+                            height: MediaQuery.of(context).size.height * 0.045,
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.onSecondary,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Icon(
+                                    Icons.gps_fixed,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Use my location',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: CSCPicker(
+                      onCountryChanged: (value) {
+                        setState(() {
+                          countryValue = value;
+                        });
+                      },
+                      onStateChanged: (value) {
+                        setState(() {
+                          stateValue = value;
+                        });
+                      },
+                      onCityChanged: (value) {
+                        setState(() {
+                          cityValue = value;
+                        });
+                      },
+                      selectedItemStyle:
+                          Theme.of(context).textTheme.titleMedium!.copyWith(
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
-                              const SizedBox(width: 5),
-                              Text(
-                                'Use my location',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
+                      dropdownHeadingStyle:
+                          Theme.of(context).textTheme.titleLarge!.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
                               ),
-                            ],
+                      dropdownItemStyle:
+                          Theme.of(context).textTheme.titleMedium!.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                      flagState: CountryFlag.DISABLE,
+                      dropdownDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                      disabledDropdownDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                    ),
+                  ),
+                  InputTextField(
+                    controller: buildingNameController,
+                    lableText: 'House No., Building Name',
+                    hintText: 'C/201, Gravity Victoria',
+                    keyBordType: TextInputType.streetAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the building name';
+                      }
+                      return null;
+                    },
+                  ),
+                  InputTextField(
+                    controller: areaController,
+                    lableText: 'Road Name, Area, Colony',
+                    hintText: 'Street 9, Malad',
+                    keyBordType: TextInputType.streetAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the area';
+                      }
+                      return null;
+                    },
+                  ),
+                  InputTextField(
+                    controller: landmarkController,
+                    lableText: 'Nearby Famous Shop/Mall/Landmark',
+                    hintText: 'Beside Palladium Mall',
+                    keyBordType: TextInputType.streetAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the landmark';
+                      }
+                      return null;
+                    },
+                  ),
+                  if (widget.addressItem != null)
+                    Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: InkWell(
+                        onTap: isSending
+                            ? null
+                            : () async {
+                                try {
+                                  await FirebaseFirestore.instance
+                                      .collection('User')
+                                      .doc(FirebaseAuth
+                                          .instance.currentUser!.email)
+                                      .collection('Addresses')
+                                      .doc(widget.addressItem!.id)
+                                      .delete();
+
+                                  if (!context.mounted) {
+                                    return;
+                                  }
+                                  Navigator.of(context).pop();
+                                } catch (e) {
+                                  debugPrint("Error fetching location: $e");
+                                }
+                              },
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * .05,
+                          width: MediaQuery.of(context).size.width,
+                          color: Colors.red,
+                          child: Center(
+                            child: isSending
+                                ? const SizedBox(
+                                    height: 16,
+                                    width: 16,
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : Text(
+                                    'Delete Address',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
                           ),
+                        ),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                    child: InkWell(
+                      onTap: isSending ? null : _saveAddress,
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * .05,
+                        width: MediaQuery.of(context).size.width,
+                        color: Theme.of(context).colorScheme.onSecondary,
+                        child: Center(
+                          child: isSending
+                              ? const SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator(),
+                                )
+                              : Text(
+                                  'Save Address',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
                         ),
                       ),
                     ),
                   ),
                 ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: CSCPicker(
-                  onCountryChanged: (value) {
-                    setState(() {
-                      countryValue = value;
-                    });
-                  },
-                  onStateChanged: (value) {
-                    setState(() {
-                      stateValue = value;
-                    });
-                  },
-                  onCityChanged: (value) {
-                    setState(() {
-                      cityValue = value;
-                    });
-                  },
-                  selectedItemStyle:
-                      Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                  dropdownHeadingStyle:
-                      Theme.of(context).textTheme.titleLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                  dropdownItemStyle:
-                      Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                  flagState: CountryFlag.DISABLE,
-                  dropdownDecoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Theme.of(context).colorScheme.onSecondary,
-                  ),
-                  disabledDropdownDecoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Theme.of(context).colorScheme.onSecondary,
-                  ),
-                ),
-              ),
-              InputTextField(
-                controller: buildingNameController,
-                lableText: 'House No., Building Name',
-                hintText: 'C/201, Gravity Victoria',
-                keyBordType: TextInputType.streetAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the building name';
-                  }
-                  return null;
-                },
-              ),
-              InputTextField(
-                controller: areaController,
-                lableText: 'Road Name, Area, Colony',
-                hintText: 'Street 9, Malad',
-                keyBordType: TextInputType.streetAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the area';
-                  }
-                  return null;
-                },
-              ),
-              InputTextField(
-                controller: landmarkController,
-                lableText: 'Nearby Famous Shop/Mall/Landmark',
-                hintText: 'Beside Palladium Mall',
-                keyBordType: TextInputType.streetAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the landmark';
-                  }
-                  return null;
-                },
-              ),
-              if (widget.addressItem != null)
-                Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: InkWell(
-                    onTap: isSending
-                        ? null
-                        : () async {
-                            try {
-                              await FirebaseFirestore.instance
-                                  .collection('User')
-                                  .doc(FirebaseAuth.instance.currentUser!.email)
-                                  .collection('Addresses')
-                                  .doc(widget.addressItem!.id)
-                                  .delete();
+                FutureBuilder<QuerySnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('User')
+                        .doc(FirebaseAuth.instance.currentUser!.email)
+                        .collection('Address')
+                        .get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        final addresses = snapshot.data!.docs;
+                        return Column(
+                          children: addresses.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final doc = entry.value;
+                            final addressData = doc.data() as Map<String, dynamic>;
 
-                              if (!context.mounted) {
-                                return;
-                              }
-                              Navigator.of(context).pop();
-                            } catch (e) {
-                              debugPrint("Error fetching location: $e");
-                            }
-                          },
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * .05,
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.red,
-                      child: Center(
-                        child: isSending
-                            ? const SizedBox(
-                                height: 16,
-                                width: 16,
-                                child: CircularProgressIndicator(),
-                              )
-                            : Text(
-                                'Delete Address',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                            return Card(
+                              child: ListTile(
+                                leading: Radio<int>(
+                                  value: index,
+                                  groupValue: _selectedAddressIndex,
+                                  onChanged: (int? value) {
+                                    setState(() {
+                                      _selectedAddressIndex = value;
+                                    });
+                                  },
+                                ),
+                                title: Text(
+                                  addressData['name'],
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Text(addressData['address']),
+                                // Add any other details you want to display
                               ),
+                            );
+                           }).toList(),
+                          );
+                        }
+                      }
+                    ),
+                ElevatedButton(
+                  onPressed: _selectedAddressIndex != null
+                      ? () {
+                    // Retrieve the selected address
+                    final selectedAddress = "Your selected address";
+
+                    // Navigate to the PaymentScreen and pass the selected address
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PaymentScreen(
+                          address: selectedAddress,
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  }
+                      : null,
+                  child: Text('Continue'),
                 ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-                child: InkWell(
-                  onTap: isSending ? null : _saveAddress,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * .05,
-                    width: MediaQuery.of(context).size.width,
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    child: Center(
-                      child: isSending
-                          ? const SizedBox(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator(),
-                            )
-                          : Text(
-                              'Save Address',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shopperstoreuser/BottomNavigation/BottomNavigation.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -112,10 +113,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     'subtotal': _subtotal,
                     'timestamp': Timestamp.now(),
                     'UID': currentUserUID,
-
                   });
 
-                  // Handle success
+                  cartSnapshot.docs.forEach((doc){
+                    doc.reference.delete();
+                  });
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Your order has been placed.'),
+                    ),
+                  );
+
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNavigationHome()));
+
                 } catch (error) {
                   // Handle error
                   print('Error placing order: $error');

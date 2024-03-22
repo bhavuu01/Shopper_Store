@@ -18,7 +18,7 @@ class CheckOutScreen extends StatefulWidget {
 class _CheckOutScreenState extends State<CheckOutScreen> {
   String _formatCurrency(double amount) {
     final NumberFormat _indianCurrencyFormat =
-    NumberFormat.currency(locale: 'en_IN', symbol: '₹');
+    NumberFormat.currency(locale: 'en_IN', symbol: '');
     return _indianCurrencyFormat.format(amount);
   }
 
@@ -37,15 +37,16 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     totalPrice = 0;
     totalDiscount = 0;
     for (var product in widget.cartItems) {
-      double productPrice = double.parse(product.productPrice.replaceAll(',', ''));
+      double productPrice =
+      double.parse(product.productPrice.replaceAll(',', ''));
       double newPrice = double.parse(product.newPrice.replaceAll(',', ''));
       totalPrice += productPrice * int.parse(product.selectedqty);
-      totalDiscount += (productPrice - newPrice) * int.parse(product.selectedqty);
+      totalDiscount +=
+          (productPrice - newPrice) * int.parse(product.selectedqty);
     }
 
     subtotal = totalPrice - totalDiscount + deliveryCharges;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +89,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           ),
                           Text('MRP ${product.newPrice}'),
                           Text('Qty: ${product.selectedqty}'),
-                          Text('Total Price ${_formatCurrency(double.parse(product.totalprice))}'), // Format total price with commas
+                          Text(
+                              'Total Price ${_formatCurrency(double.parse(product.totalprice))}'), // Format total price with commas
                         ],
                       ),
                     ),
@@ -118,7 +120,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Product Price:'),
-                        Text('₹${_formatCurrency(totalPrice)}'), // Format product price with commas
+                        Text(
+                            '₹${_formatCurrency(totalPrice)}'), // Format product price with commas
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -134,7 +137,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Delivery Charges:'),
-                        Text('₹${_formatCurrency(deliveryCharges)}'), // Format delivery charges with commas
+                        Text(
+                            '₹${_formatCurrency(deliveryCharges)}'), // Format delivery charges with commas
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -159,13 +163,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(14.0), // Adjust padding as needed
+            padding: const EdgeInsets.all(14.0),
             child: Text(
-              'Subtotal: ₹${_formatCurrency(subtotal)}', // Format subtotal with commas
+              'Subtotal: ₹${_formatCurrency(subtotal)}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
-                color: Colors.black, // Change color according to your preference
+                color: Colors.black,
               ),
             ),
           ),
@@ -175,7 +179,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               padding: const EdgeInsets.all(14.0),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Address()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Address()));
                 },
                 child: Text(
                   'Place Order',
