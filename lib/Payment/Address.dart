@@ -37,6 +37,7 @@ class _AddressState extends State<Address> {
   String? cityValue;
   bool isSending = false;
   bool isExpanded = false;
+  bool isFetchingData = false;
 
   @override
   void initState() {
@@ -512,10 +513,13 @@ class _AddressState extends State<Address> {
                         .get(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        // Only show CircularProgressIndicator if data is being fetched
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
-                      } else {
+                      } else if (snapshot.hasData) { // Check if snapshot has data
                         final addresses = snapshot.data!.docs;
                         return Column(
                           children: addresses.asMap().entries.map((entry) {
@@ -544,13 +548,21 @@ class _AddressState extends State<Address> {
                             );
                           }).toList(),
                         );
+                      } else { // Handle the case where snapshot has no data
+                        return Text('No data available.');
                       }
                     }
                 ),
+
                 ElevatedButton(
                   onPressed: _selectedAddressIndex != null
                       ? () async {
                     try {
+                      // Set isFetchingData to true before fetching selected address
+                      setState(() {
+                        isFetchingData = true;
+                      });
+
                       // Retrieve the selected address data from Firestore
                       final snapshot = await FirebaseFirestore.instance
                           .collection('User')
@@ -558,10 +570,16 @@ class _AddressState extends State<Address> {
                           .collection('Address')
                           .get();
 
+                      // Reset isFetchingData back to false after fetching data
+                      setState(() {
+                        isFetchingData = false;
+                      });
+
                       // Check if the selected index is within bounds
                       if (_selectedAddressIndex! < snapshot.docs.length) {
                         // Retrieve the selected address data
-                        final selectedAddressData = snapshot.docs[_selectedAddressIndex!].data() as Map<String, dynamic>;
+                        final selectedAddressData =
+                        snapshot.docs[_selectedAddressIndex!].data() as Map<String, dynamic>;
 
                         // Construct the selected address string
                         final selectedAddress = selectedAddressData['address'];
