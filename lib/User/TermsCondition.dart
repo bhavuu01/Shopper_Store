@@ -1,60 +1,101 @@
 import 'package:flutter/material.dart';
 
 class TermsAndConditionsPage extends StatelessWidget {
+  const TermsAndConditionsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Terms and Conditions'),
+        title: const Text('Terms and Conditions'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Introduction',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            _buildSectionTitle('Introduction'),
+            _buildParagraph(
+              [
+                'Welcome to Shopper Store! These terms and conditions outline the rules and regulations for the use of Shopper Store\'s Website and App, located at https://www.shopperstore.com and Shopper Store App.',
+                'By accessing this Website and App, we assume you accept these terms and conditions.',
+                'Do not continue to use Shopper Store if you do not agree to take all of the terms and conditions stated on this page.',
+              ],
             ),
-            SizedBox(height: 10),
-            Text(
-              'Welcome to StyleHub! These terms and conditions outline the rules and regulations for the use of StyleHub\'s Website and App, located at https://www.stylehub.com and StyleHub App. By accessing this Website and App, we assume you accept these terms and conditions. Do not continue to use StyleHub if you do not agree to take all of the terms and conditions stated on this page.',
-              style: TextStyle(fontSize: 16),
+            const SizedBox(height: 20),
+            _buildSectionTitle('Intellectual Property Rights'),
+            _buildParagraph(
+              [
+                'All content included as part of the Service, such as text, graphics, logos, images, as well as the compilation thereof, and any software used on the App, is the property of Shopper Store or its suppliers and protected by copyright and other laws that protect intellectual property and proprietary rights.',
+              ],
             ),
-            SizedBox(height: 20),
-            Text(
-              'Intellectual Property Rights',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            const SizedBox(height: 20),
+            _buildSectionTitle('Limitation of Liability'),
+            _buildParagraph(
+              [
+                'In no event shall Shopper Store, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from:',
+                'Your access to or use of or inability to access or use the Service',
+                'Any conduct or content of any third party on the Service',
+                'Any content obtained from the Service',
+                'Unauthorized access, use or alteration of your transmissions or content, whether based on warranty, contract, tort (including negligence) or any other legal theory, whether or not we have been informed of the possibility of such damage, and even if a remedy set forth herein is found to have failed of its essential purpose.',
+              ],
             ),
-            SizedBox(height: 10),
-            Text(
-              'All content included as part of the Service, such as text, graphics, logos, images, as well as the compilation thereof, and any software used on the App, is the property of StyleHub or its suppliers and protected by copyright and other laws that protect intellectual property and proprietary rights.',
-              style: TextStyle(fontSize: 16),
+            const SizedBox(height: 20),
+            _buildSectionTitle('Governing Law'),
+            _buildParagraph(
+              [
+                'These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.',
+                'Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights.',
+                'If any provision of these Terms is held to be invalid or unenforceable by a court, the remaining provisions of these Terms will remain in effect.',
+                'These Terms constitute the entire agreement between us regarding our Service, and supersede and replace any prior agreements we might have between us regarding the Service.',
+              ],
             ),
-            SizedBox(height: 20),
-            Text(
-              'Limitation of Liability',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'In no event shall StyleHub, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from (i) your access to or use of or inability to access or use the Service; (ii) any conduct or content of any third party on the Service; (iii) any content obtained from the Service; and (iv) unauthorized access, use or alteration of your transmissions or content, whether based on warranty, contract, tort (including negligence) or any other legal theory, whether or not we have been informed of the possibility of such damage, and even if a remedy set forth herein is found to have failed of its essential purpose.',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Governing Law',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions. Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights. If any provision of these Terms is held to be invalid or unenforceable by a court, the remaining provisions of these Terms will remain in effect. These Terms constitute the entire agreement between us regarding our Service, and supersede and replace any prior agreements we might have between us regarding the Service.',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 20),
-
+            const SizedBox(height: 20),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildParagraph(List<String> points) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: points.map((point) => _buildBulletPoint(point)).toList(),
+    );
+  }
+
+  Widget _buildBulletPoint(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.arrow_right),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

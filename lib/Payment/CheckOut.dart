@@ -153,7 +153,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         ),
                         Text(
                           '₹${_formatCurrency(subtotal)}', // Format subtotal with commas
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold,),
                         ),
                       ],
                     ),
@@ -169,7 +169,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
-                color: Colors.black,
+                color: Colors.cyan,
               ),
             ),
           ),
