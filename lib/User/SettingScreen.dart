@@ -1,73 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopperstoreuser/User/NeedHelp.dart';
-import 'package:shopperstoreuser/User/PrivacyPolicy.dart';
-import 'package:shopperstoreuser/User/ReturnPolicy.dart';
-import 'package:shopperstoreuser/User/TermsCondition.dart';
-
 import '../Provider.dart';
+import 'NeedHelp.dart';
+import 'PrivacyPolicy.dart';
+import 'ReturnPolicy.dart';
+import 'TermsCondition.dart';
 
 class SettingScreen extends StatelessWidget {
+  const SettingScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AnimatedContainer(
               duration: const Duration(milliseconds: 500),
               height: 80,
               child: Card(
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(" Change Your Theme color"),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 100),
-                      child: IconButton(
-                        onPressed: () {
-                          Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-                        },
-                        icon: const Icon(Icons.brightness_4_outlined),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 16.0),
+                      child: Text(
+                        "Change Your Theme color",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                      },
+                      icon: const Icon(Icons.brightness_4_outlined),
                     ),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               "Account Settings",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Divider(),
-            // buildSettingsItem("Edit Profile", Icons.edit),
+            const Divider(),
             buildSettingsItem(context, "Manage Notifications", Icons.notifications, () {
               // Action for Manage Notifications
             }),
             buildSettingsItem(context, "Saved Addresses", Icons.location_on, () {
               // Action for Saved Addresses
             }),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               "Feedback & Information",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Divider(),
+            const Divider(),
             buildSettingsItem(context, "Terms of Use", Icons.description, () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => TermsAndConditionsPage()));
             }),
             buildSettingsItem(context, "Privacy Policy", Icons.privacy_tip, () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyPage()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>  PrivacyPolicyPage()));
             }),
             buildSettingsItem(context, "Return Policy", Icons.keyboard_return, () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ReturnPolicyScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>  ReturnPolicyScreen()));
             }),
             buildSettingsItem(context, "Help Center", Icons.help, () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => NeedHelpScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>  NeedHelpScreen()));
             }),
           ],
         ),
@@ -79,7 +87,7 @@ class SettingScreen extends StatelessWidget {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
-      trailing: Icon(Icons.arrow_forward_ios),
+      trailing: const Icon(Icons.arrow_forward_ios),
       onTap: onTap,
     );
   }

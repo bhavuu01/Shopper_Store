@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:shopperstoreuser/BottomNavigation/BottomNavigation.dart';
 
 class PaymentScreen extends StatefulWidget {
-  const PaymentScreen({super.key});
+  final String address;
+  const PaymentScreen({Key? key, required this.address}) : super(key: key);
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();

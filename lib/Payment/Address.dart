@@ -171,7 +171,7 @@ class _AddressState extends State<Address> {
         // Navigate to the next screen
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const PaymentScreen()),
+          MaterialPageRoute(builder: (context) =>  PaymentScreen(address: address)),
         );
       }
     } catch (e) {
@@ -549,19 +549,36 @@ class _AddressState extends State<Address> {
                 ),
                 ElevatedButton(
                   onPressed: _selectedAddressIndex != null
-                      ? () {
-                    // Retrieve the selected address
-                    final selectedAddress = "Your selected address";
+                      ? () async {
+                    try {
+                      // Retrieve the selected address data from Firestore
+                      final snapshot = await FirebaseFirestore.instance
+                          .collection('User')
+                          .doc(FirebaseAuth.instance.currentUser!.email)
+                          .collection('Address')
+                          .get();
 
-                    // Navigate to the PaymentScreen and pass the selected address
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => PaymentScreen(
-                    //       address: selectedAddress,
-                    //     ),
-                    //   ),
-                    // );
+                      // Check if the selected index is within bounds
+                      if (_selectedAddressIndex! < snapshot.docs.length) {
+                        // Retrieve the selected address data
+                        final selectedAddressData = snapshot.docs[_selectedAddressIndex!].data() as Map<String, dynamic>;
+
+                        // Construct the selected address string
+                        final selectedAddress = selectedAddressData['address'];
+
+                        // Navigate to the PaymentScreen and pass the selected address
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PaymentScreen(
+                              address: selectedAddress,
+                            ),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      print("Error fetching selected address: $e");
+                    }
                   }
                       : null,
                   child: Text('Continue'),
