@@ -106,7 +106,7 @@ class _AddressState extends State<Address> {
       Position position = await _determinePosition();
 
       List<Placemark> placemark =
-          await placemarkFromCoordinates(position.latitude, position.longitude);
+      await placemarkFromCoordinates(position.latitude, position.longitude);
       Placemark place = placemark[0];
 
       pinCodeController.text = place.postalCode ?? '';
@@ -256,7 +256,7 @@ class _AddressState extends State<Address> {
 
                       // Remove all non-numeric characters from the input
                       final numericValue =
-                          value.replaceAll(RegExp(r'[^0-9]'), '');
+                      value.replaceAll(RegExp(r'[^0-9]'), '');
 
                       // Check if the phone number is exactly 10 digits long
                       if (numericValue.length != 10) {
@@ -303,8 +303,8 @@ class _AddressState extends State<Address> {
                           onTap: isSending
                               ? null
                               : () async {
-                                  await fetchLocationAndPopulateAddress();
-                                },
+                            await fetchLocationAndPopulateAddress();
+                          },
                           child: Container(
                             margin: const EdgeInsets.all(14),
                             height: MediaQuery.of(context).size.height * 0.045,
@@ -317,12 +317,12 @@ class _AddressState extends State<Address> {
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Icon(
                                     Icons.gps_fixed,
                                     color:
-                                        Theme.of(context).colorScheme.secondary,
+                                    Theme.of(context).colorScheme.secondary,
                                   ),
                                   const SizedBox(width: 5),
                                   Text(
@@ -331,10 +331,10 @@ class _AddressState extends State<Address> {
                                         .textTheme
                                         .titleMedium!
                                         .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                        ),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -363,17 +363,17 @@ class _AddressState extends State<Address> {
                         });
                       },
                       selectedItemStyle:
-                          Theme.of(context).textTheme.titleMedium!.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
+                      Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                       dropdownHeadingStyle:
-                          Theme.of(context).textTheme.titleLarge!.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
+                      Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                       dropdownItemStyle:
-                          Theme.of(context).textTheme.titleMedium!.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
+                      Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                       flagState: CountryFlag.DISABLE,
                       dropdownDecoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
@@ -428,23 +428,23 @@ class _AddressState extends State<Address> {
                         onTap: isSending
                             ? null
                             : () async {
-                                try {
-                                  await FirebaseFirestore.instance
-                                      .collection('User')
-                                      .doc(FirebaseAuth
-                                          .instance.currentUser!.email)
-                                      .collection('Addresses')
-                                      .doc(widget.addressItem!.id)
-                                      .delete();
+                          try {
+                            await FirebaseFirestore.instance
+                                .collection('User')
+                                .doc(FirebaseAuth
+                                .instance.currentUser!.email)
+                                .collection('Addresses')
+                                .doc(widget.addressItem!.id)
+                                .delete();
 
-                                  if (!context.mounted) {
-                                    return;
-                                  }
-                                  Navigator.of(context).pop();
-                                } catch (e) {
-                                  debugPrint("Error fetching location: $e");
-                                }
-                              },
+                            if (!context.mounted) {
+                              return;
+                            }
+                            Navigator.of(context).pop();
+                          } catch (e) {
+                            debugPrint("Error fetching location: $e");
+                          }
+                        },
                         child: Container(
                           height: MediaQuery.of(context).size.height * .05,
                           width: MediaQuery.of(context).size.width,
@@ -452,22 +452,22 @@ class _AddressState extends State<Address> {
                           child: Center(
                             child: isSending
                                 ? const SizedBox(
-                                    height: 16,
-                                    width: 16,
-                                    child: CircularProgressIndicator(),
-                                  )
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator(),
+                            )
                                 : Text(
-                                    'Delete Address',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
+                              'Delete Address',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -483,22 +483,22 @@ class _AddressState extends State<Address> {
                         child: Center(
                           child: isSending
                               ? const SizedBox(
-                                  height: 16,
-                                  width: 16,
-                                  child: CircularProgressIndicator(),
-                                )
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(),
+                          )
                               : Text(
-                                  'Save Address',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
+                            'Save Address',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -542,11 +542,11 @@ class _AddressState extends State<Address> {
                                 // Add any other details you want to display
                               ),
                             );
-                           }).toList(),
-                          );
-                        }
+                          }).toList(),
+                        );
                       }
-                    ),
+                    }
+                ),
                 ElevatedButton(
                   onPressed: _selectedAddressIndex != null
                       ? () {
@@ -554,14 +554,14 @@ class _AddressState extends State<Address> {
                     final selectedAddress = "Your selected address";
 
                     // Navigate to the PaymentScreen and pass the selected address
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PaymentScreen(
-                          address: selectedAddress,
-                        ),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => PaymentScreen(
+                    //       address: selectedAddress,
+                    //     ),
+                    //   ),
+                    // );
                   }
                       : null,
                   child: Text('Continue'),
@@ -585,12 +585,12 @@ class InputTextField extends StatelessWidget {
 
   const InputTextField(
       {super.key,
-      required this.controller,
-      this.lableText,
-      required this.hintText,
-      this.validator,
-      this.prefixIcon,
-      required this.keyBordType});
+        required this.controller,
+        this.lableText,
+        required this.hintText,
+        this.validator,
+        this.prefixIcon,
+        required this.keyBordType});
 
   @override
   Widget build(BuildContext context) {

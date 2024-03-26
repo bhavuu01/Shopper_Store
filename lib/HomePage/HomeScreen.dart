@@ -1,5 +1,3 @@
-
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -190,9 +188,9 @@ class CategoryCard extends StatelessWidget {
             ),
           );
         },
-        child: Card(
+        child: Container(
           color: Colors.white,
-          elevation: 1,
+          // elevation: 1,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -242,7 +240,11 @@ class ProductHome extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, crossAxisSpacing: 2, mainAxisSpacing: 2, childAspectRatio: 0.7),
+              crossAxisCount: 2,
+              crossAxisSpacing: 2,
+              mainAxisSpacing: 2,
+              childAspectRatio: 0.7
+          ),
           itemCount: productDocs.length,
           itemBuilder: (context, index) {
             final product = ProductModel.fromSnapshot(productDocs[index]);

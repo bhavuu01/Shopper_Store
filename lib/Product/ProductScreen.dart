@@ -21,14 +21,11 @@ class _ProductScreenState extends State<ProductScreen> {
 
   Future<List<ProductModel>> readProduct() async {
     try {
-      // Query Firestore for all products
       QuerySnapshot response = await productRef.get();
 
-      // Convert QuerySnapshot to a list of ProductModel
       List<ProductModel> products =
       response.docs.map((e) => ProductModel.fromSnapshot(e)).toList();
 
-      // Filter products based on the selected subcategory
       List<ProductModel> filteredProducts = products
           .where((element) => element.brand == widget.seletedBrand.brand)
           .toList();
@@ -36,16 +33,9 @@ class _ProductScreenState extends State<ProductScreen> {
       return filteredProducts;
     } catch (error) {
       print("Error reading products: $error");
-      rethrow; //
+      rethrow;
     }
   }
-
-
-  // Future<List<ProductModel>> readProduct() async
-  // {
-  //   QuerySnapshot response = await productRef.get();
-  //   return response.docs.map((e) => ProductModel.fromSnapshot(e)).toList();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -53,32 +43,37 @@ class _ProductScreenState extends State<ProductScreen> {
       appBar: AppBar(
         title: Text('Products'),
       ),
-        body: FutureBuilder<List<ProductModel>>(
-            future: readProduct(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting){
-                return Center(child: CircularProgressIndicator(),);
-              }
+      body: FutureBuilder<List<ProductModel>>(
+        future: readProduct(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
 
-              if (!snapshot.hasData || snapshot.data!.isEmpty){
-                return Center(child: Text('No products available'));
-              }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No products available'));
+          }
 
-              final productDocs = snapshot.data!;
+          final productDocs = snapshot.data!;
 
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: productDocs.map((product) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ProductCard(product: product,),
-                    );
-                  }).toList(),
-                ),
-              );
-            }
-        )
+          return SingleChildScrollView(
+            child: GridView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 0.7,
+              ),
+              shrinkWrap: true,
+              itemCount: productDocs.length,
+              itemBuilder: (context, index) {
+                return ProductCard(product: productDocs[index]);
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -111,7 +106,6 @@ class ProductCard extends StatelessWidget {
               children: [
                 SizedBox(
                   height: 150,
-                  // width: double.infinity,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8.0),
                     child: Image.network(
@@ -131,9 +125,7 @@ class ProductCard extends StatelessWidget {
                     Text(
                       '₹ ${product.productPrice}',
                       style: TextStyle(
-                        // color: Colors.red,
                         decoration: TextDecoration.lineThrough,
-                        // decorationColor: Colors.red,
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),

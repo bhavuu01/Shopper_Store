@@ -29,14 +29,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     double subtotal = 0.0;
     cartSnapshot.docs.forEach((doc) {
-      double totalprice = double.parse(doc['totalprice']);
-      subtotal += totalprice;
+      print('Total Price String: ${doc['totalprice']}'); // Add this line for logging
+      try {
+        double totalprice = double.parse(doc['totalprice']);
+        subtotal += totalprice;
+      } catch (e) {
+        print('Error parsing total price: $e');
+      }
     });
 
     setState(() {
       _subtotal = subtotal;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +138,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   print('Error placing order: $error');
                 }
               },
-              child: Text('Place Order'),
+              child: Center(
+                child: Container(
+                    child: Text('Place Order',style: TextStyle(color: Colors.black),)),
+              ),
             ),
           ],
         ),

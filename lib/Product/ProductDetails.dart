@@ -6,6 +6,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopperstoreuser/BottomNavigation/BottomNavigation.dart';
+import 'package:shopperstoreuser/Cart/CartScreen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../Models/FavModel.dart';
@@ -40,6 +41,7 @@ class _ProductDetailsState extends State<ProductDetails> {
     // 'Qty: 10',
   ];
   bool timer = false;
+  bool isInCart = false;
 
   @override
   void initState() {
@@ -48,8 +50,26 @@ class _ProductDetailsState extends State<ProductDetails> {
         timer = true;
       });
     });
-
+    checkIfInCart();
     super.initState();
+  }
+
+  void checkIfInCart() async {
+    try {
+      // Query the Firestore to check if the product is in the cart
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('ShoppingCart')
+          .where('UID', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where('productName', isEqualTo: widget.product.productName)
+          .limit(1)
+          .get();
+
+      setState(() {
+        isInCart = querySnapshot.docs.isNotEmpty;
+      });
+    } catch (e) {
+      print('Error checking if product is in cart: $e');
+    }
   }
 
   @override
@@ -257,42 +277,52 @@ class _ProductDetailsState extends State<ProductDetails> {
                             .size
                             .width,
                         height: 50,
-                        child: ElevatedButton(
-                            style: ButtonStyle(
-                                backgroundColor:
-                                MaterialStateProperty.all(
-                                    Colors.yellow[700]),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(
-                                          25.0),
-                                    ))),
-                            onPressed: () async {
-                              // Call the method to add the product to the cart
-                              await _addToCart(widget.product);
-                              // Show a snackbar to indicate success
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Successfully added to Cart')),
-                              );
-                              // Optionally, navigate to another screen or update the UI
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        BottomNavigationHome(),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: 50,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    isInCart ? Colors.yellow[700] : Colors.yellow[700]),
+                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25.0),
                                   ),
-                                      (route) => false);
-                            },
-                            child: const Text(
-                              "Add to Cart",
-                              style: TextStyle(
-                                  color: Colors.black),
-                            )),
+                                ),
+                              ),
+                              onPressed: () async {
+                                if (isInCart) {
+
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddToCartScreen(),));
+                                } else {
+                                  // If item is not in cart, add it to cart
+                                  await _addToCart(widget.product);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Successfully added to Cart'),
+                                    ),
+                                  );
+                                  // Optionally, navigate to another screen or update the UI
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BottomNavigationHome(),
+                                    ),
+                                        (route) => false,
+                                  );
+                                }
+                              },
+                              child: Text(
+                                isInCart ? "Go to Cart" : "Add to Cart",
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                            // child: const Text(
+                            //   "Add to Cart",
+                            //   style: TextStyle(
+                            //       color: Colors.black),
+                            // )),
                       ),
                     ),
                     Padding(

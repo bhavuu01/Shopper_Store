@@ -38,22 +38,6 @@ class _FavPageState extends State<FavPage> {
           productName: doc['productName'],
           newPrice: doc['productNewPrice'],
           selectedqty: doc['quantity'],
-          // product1: doc['productTitleDetail1'],
-          // product2: doc['productTitleDetail2'],
-          // product3: doc['productTitleDetail3'],
-          // product4: doc['productTitleDetail4'],
-          // title1: doc['productTitle1'],
-          // title2: doc['productTitle2'],
-          // title3: doc['productTitle3'],
-          // title4: doc['productTitle4'],
-          // brand: doc['brand'],
-          // category: doc['category'],
-          // color: doc['productColor'],
-          // discount: doc['discount'],
-          // productDescription: doc['productDescription'],
-          // productPrice: doc['productPrice'],
-          // totalprice: doc['totalprice'],
-          // itemdetails: doc['itemdetails'],
           images: List<String>.from(doc['images'] ?? []),
         );
       }).toList();
@@ -162,6 +146,56 @@ class _FavPageState extends State<FavPage> {
       print('Error adding to cart and removing from favorites: $e');
     }
   }
+
+  Future<void> _addToFavorites(FavModel product) async {
+    try {
+      final currentUserID = FirebaseAuth.instance.currentUser!.uid;
+
+      // Check if the product is already in favorites
+      final isFavorite = favoriteProducts.contains(product);
+
+      if (isFavorite) {
+        // If it's already a favorite, remove it
+        await FirebaseFirestore.instance
+            .collection('Favorites')
+            .doc(product.id)
+            .delete();
+        // Remove the product from the list of favorite products
+        favoriteProducts.remove(product);
+      } else {
+        // If it's not a favorite, add it
+        await FirebaseFirestore.instance.collection('Favorites').add({
+          'UID': currentUserID,
+          'images': product.images,
+          'productName': product.productName,
+          'productNewPrice': product.newPrice,
+          'quantity': product.selectedqty,
+        });
+        // Add the product to the list of favorite products
+        favoriteProducts.add(product);
+      }
+
+      // Check if the product is in the cart
+      final cartSnapshot = await FirebaseFirestore.instance
+          .collection('ShoppingCart')
+          .where('UID', isEqualTo: currentUserID)
+          .where('productName', isEqualTo: product.productName)
+          .get();
+
+      if (cartSnapshot.docs.isNotEmpty) {
+        // If the product is in the cart, remove it
+        await FirebaseFirestore.instance
+            .collection('ShoppingCart')
+            .doc(cartSnapshot.docs.first.id)
+            .delete();
+      }
+
+      setState(() {});
+    } catch (e) {
+      print('Error adding/removing product to/from favorites: $e');
+    }
+  }
+
 
   Future<void> _removeFromFavorites(FavModel product) async {
     try {
