@@ -368,11 +368,21 @@ class _EditUserInfoScreenState extends State<EditUserInfoScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _updateUserData,
-                child: const Text(
-                  'Save',
-                  style: TextStyle(color: Colors.black),
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                ),
+                child: Center(
+                  child: Container(
+                    child: Text(
+                      'Save',
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
               ),
+
             ],
           ),
         ),

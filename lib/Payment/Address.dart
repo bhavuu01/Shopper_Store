@@ -38,6 +38,7 @@ class _AddressState extends State<Address> {
   bool isSending = false;
   bool isExpanded = false;
   bool isFetchingData = false;
+  bool isAddAddressExpanded = false;
 
   @override
   void initState() {

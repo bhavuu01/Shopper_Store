@@ -239,13 +239,16 @@ class _AddToCartScreenState extends State<AddToCartScreen> {
                   );
                 }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
-              child: const Text(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+              ),
+              child: Text(
                 'Checkout',
                 style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
             ),
           ],

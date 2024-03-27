@@ -169,7 +169,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
-                color: Colors.cyan,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
               ),
             ),
           ),
@@ -181,11 +181,14 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Address()));
-                },
+                }, style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+              ),
                 child: Text(
                   'Place Order',
                   style: TextStyle(
                     fontSize: 18,
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
                   ),
                 ),
               ),
